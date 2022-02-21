@@ -16,6 +16,8 @@
 #include <unordered_set>
 #include <set>
 
+#include <cstdio>
+
 class ImagesHandler {
     private:
         cv::Mat camera_matrix_;
@@ -36,31 +38,20 @@ class FilesHandler {
         static void makeFilesList(
             const std::string &path_to_files_folder, 
             const std::string &path_to_list="./files_list.txt", 
-            bool shuffle=false, 
-            bool re_order=false) {
+            bool shuffle=false) {
                 std::cout << "-> The path to files list is: " << path_to_list << std::endl;
                 std::vector<std::string> files_list = {};
                 int idx = 0;
 
-                auto iter = std::filesystem::directory_iterator(path_to_files_folder);
                 std::set<std::filesystem::path> sorted_by_name;
-                for (auto &entry: std::filesystem::directory_iterator(path_to_files_folder))
-                    sorted_by_name.insert(entry.path());
+                for (const auto &path_to_file: std::filesystem::directory_iterator(path_to_files_folder))
+                    sorted_by_name.insert(path_to_file.path());
 
                 for (const auto& path_to_file : sorted_by_name) {
                     std::string file_list (path_to_file);
 
-                    if (!re_order) { 
-                        // Original file name
-                        int loc_last_slash = file_list.find_last_of('/');
-                        file_list = file_list.substr(loc_last_slash+1, file_list.size()-1);
-                    } else {
-                        // Modified file name 0.jpg, 1.jpg, 2.jgp, 3.jpg ...
-                        int loc_last_dot = file_list.find_last_of('.');
-                        std::stringstream ss;
-                        ss << std::setw(6) << std::setfill('0') << idx;
-                        file_list = ss.str() + file_list.substr(loc_last_dot, file_list.size()-1);
-                    }
+                    int loc_last_slash = file_list.find_last_of('/');
+                    file_list = file_list.substr(loc_last_slash+1, file_list.size()-1);
 
                     files_list.push_back(std::to_string(idx++) + " " + file_list);
                 }
@@ -112,6 +103,22 @@ class FilesHandler {
             for (int i = N; i < files_num; ++i) 
                 indexes.insert(i);
             deleteFiles(path_to_files_folder, indexes);
+        }
+
+        static void renameFiles(const std::string &path_to_files_folder, int type = 1) {
+            std::set<std::filesystem::path> sorted_by_name;
+            for (auto &entry: std::filesystem::directory_iterator(path_to_files_folder))
+                sorted_by_name.insert(entry.path());
+
+            if (type == 1) {
+                int index = 0;
+                for (auto &path_to_file : sorted_by_name) {
+                    std::rename(path_to_file.c_str(), (path_to_files_folder + "/" + std::to_string(index++) + ".jpg").c_str());
+                } 
+            } else {
+                std::cout << "Undefined naming strategy\n";
+            }
+            return;
         }
 
     private:
