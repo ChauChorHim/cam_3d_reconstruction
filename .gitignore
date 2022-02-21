@@ -1,5 +1,5 @@
 process_images/*
 !process_images/CMakeLists.txt
-!process_images/examples
+!process_images/examples/process_images.cpp
 !process_images/include
 !process_images/src
