@@ -20,9 +20,10 @@ int main(int argc, char** argv){
     std::string input_folder_dir(argv[1]);
     std::string output_folder_dir(argv[2]);
 
-    filesHandler.makeFilesList(input_folder_dir, output_folder_dir+"/images_list.txt", true);
-    // FilesHandler::keepFirstNFiles(output_folder_dir, 50000);
+    filesHandler.makeFilesList(input_folder_dir, output_folder_dir+"/images_list.txt");
+    filesHandler.keepFirstNFiles(input_folder_dir, 50000);
+    filesHandler.makeFilesList(input_folder_dir, output_folder_dir+"/images_list.txt", true, false); // update the files list
     filesHandler.splitFilesList(output_folder_dir+"/images_list.txt", 0.9);
-
+    
     return 0;
 }

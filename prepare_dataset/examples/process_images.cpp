@@ -25,12 +25,15 @@ int main(int argc, char** argv){
     imagesHandler.readCameraParameters(yml_filename);
 
     imagesHandler.loadImages(input_folder_dir, images_list);
-    imagesHandler.undistortImages(output_folder_dir);
 
-    imagesHandler.loadImages(output_folder_dir, images_list);
-    imagesHandler.cropImages(0, 640, 0, 1280, output_folder_dir);
+    imagesHandler.undistortCropResizeImages(output_folder_dir, 0, 640, 0, 1280, 320, 640);
 
-    imagesHandler.resizeImages(320, 640, output_folder_dir);
+    // imagesHandler.undistortImages(output_folder_dir);
+
+    // imagesHandler.loadImages(output_folder_dir, images_list);
+    // imagesHandler.cropImages(0, 640, 0, 1280, output_folder_dir);
+
+    // imagesHandler.resizeImages(320, 640, output_folder_dir);
 
     return 0;
 }

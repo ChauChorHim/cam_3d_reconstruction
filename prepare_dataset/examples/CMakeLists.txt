@@ -33,16 +33,3 @@ target_include_directories(make_train_val_files
     PRIVATE
         /home/Autowise/zcq_tools/prepare_dataset/include
 )
-
-
-add_executable(rename_files
-    rename_files.cpp
-)
-target_link_libraries(rename_files 
-    PRIVATE
-        /home/Autowise/zcq_tools/prepare_dataset/lib/libfiles_handler.so
-)
-target_include_directories(rename_files 
-    PRIVATE
-        /home/Autowise/zcq_tools/prepare_dataset/include
-)

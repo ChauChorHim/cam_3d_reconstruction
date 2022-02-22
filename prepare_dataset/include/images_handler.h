@@ -15,4 +15,5 @@ class ImagesHandler {
         void undistortImages(const std::string &output_folder_dir);
         void cropImages(const size_t row_1, const size_t row_2, const size_t col_1, const size_t col_2, const std::string &output_folder_dir);
         void resizeImages(const size_t height, const size_t width, const std::string &output_folder_dir);
+        void undistortCropResizeImages(const std::string &output_folder_dir, const size_t row_1, const size_t row_2, const size_t col_1, const size_t col_2, const size_t height, const size_t width);
 };
