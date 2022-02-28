@@ -15,6 +15,7 @@ target_link_libraries(process_images
     PRIVATE
         ${OpenCV_LIBS} 
         /home/Autowise/zcq_tools/prepare_dataset/lib/libimages_handler.so
+        /home/Autowise/zcq_tools/prepare_dataset/lib/libfiles_handler.so
 )
 target_include_directories(process_images 
     PRIVATE
@@ -33,3 +34,4 @@ target_include_directories(make_train_val_files
     PRIVATE
         /home/Autowise/zcq_tools/prepare_dataset/include
 )
+

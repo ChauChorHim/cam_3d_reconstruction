@@ -8,18 +8,15 @@
 #include <algorithm>
 #include <iterator>
 #include <cstdio>
+#include <cassert>
 
-void FilesHandler::makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list, bool shuffle, bool rename_files) {
+void FilesHandler::makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list, bool shuffle) {
 
     std::cout << "-> The path to files list is: " << path_to_list << std::endl;
     if (std::filesystem::exists(path_to_list)) {
         std::remove(path_to_list.c_str());
     }
 
-    if (rename_files) {  // strongly recommend to do so
-        FilesHandler::renameFiles(path_to_files_folder);
-    }
-    
     std::set<std::filesystem::path> sorted_by_name;
 
     for (const auto &path_to_file: std::filesystem::directory_iterator(path_to_files_folder))
@@ -30,12 +27,17 @@ void FilesHandler::makeFilesList(const std::string &path_to_files_folder, const 
     int idx = 0;
 
     for (const auto& path_to_file : sorted_by_name) {
-        std::string file_list (path_to_file);
+        std::string file_name (path_to_file);
 
-        int loc_last_slash = file_list.find_last_of('/');
-        file_list = file_list.substr(loc_last_slash+1, file_list.size()-1);
+        int loc_last_slash = file_name.find_last_of('/');
+        file_name = file_name.substr(loc_last_slash+1, file_name.size()-1); // file name with extension
 
-        files_list.push_back(std::to_string(idx++) + " " + file_list);  // only get index + the file name 
+        std::stringstream ss;
+        ss << std::setw(6) << std::setfill('0') << idx;
+        std::string file_name_with_sequence = ss.str() + "_" + file_name;
+
+        // files_list.push_back(std::to_string(idx++) + " " + file_name_with_sequence); 
+        files_list.push_back(std::to_string(idx++) + " " + file_name); 
     }
 
     if(shuffle) {
@@ -49,18 +51,55 @@ void FilesHandler::makeFilesList(const std::string &path_to_files_folder, const 
     std::copy(files_list.begin(), files_list.end(), list_iterator);
 }
 
-void FilesHandler::splitFilesList(const std::string &path_to_list, int train_dataset_ratio) {
-    int number_of_lines = 0;
-    std::string line;
-    std::ifstream original_list(path_to_list);
-    while (std::getline(original_list, line))
-        ++number_of_lines;
+void FilesHandler::removeMarginList(std::vector<std::string> &files_list, std::vector<int>& margin_list) {
+    // TODO erase a vector from a vector
+    files_list.erase(files_list.begin());
+    files_list.erase(files_list.begin());
+    files_list.erase(files_list.begin());
+    files_list.erase(files_list.end());
+    files_list.erase(files_list.end());
+}
+
+
+
+void FilesHandler::splitFilesList(const std::string &path_to_list, double train_dataset_ratio, bool shuffle, bool remove_margin) {
+    std::vector<std::string> path_to_files;
+    std::string path_to_file;
+
+    std::ifstream list(path_to_list);
+    while (std::getline(list, path_to_file)) {
+        path_to_files.push_back(path_to_file);
+    }
+
+    if(remove_margin) {
+        std::vector<int> margin_list {0, 1, 2, -1, -2};
+        FilesHandler::removeMarginList(path_to_files, margin_list);
+    }
+
+    std::vector<std::string> path_to_train_files, path_to_val_files; 
+
+    for (int count = 0; count < path_to_files.size(); ++count) {
+        // std::cout << line << std::endl;
+        if (count < train_dataset_ratio * path_to_files.size()) {
+            path_to_train_files.push_back(path_to_files[count]);
+        } else {
+            path_to_val_files.push_back(path_to_files[count]);
+        }
+    }
+
+    if (shuffle) {
+        auto rd = std::random_device {};
+        auto rng = std::default_random_engine {rd()};
+        std::shuffle(std::begin(path_to_train_files), std::end(path_to_train_files), rng);
+        std::shuffle(std::begin(path_to_val_files), std::end(path_to_val_files), rng);
+    }
 
     int loc_last_slash = path_to_list.find_last_of('/');
     std::string directory_to_list = path_to_list.substr(0, loc_last_slash+1);
     std::string path_to_train_list = directory_to_list + "train_files.txt";
     std::string path_to_val_list = directory_to_list + "val_files.txt";
 
+    
     if (std::filesystem::exists(path_to_train_list)) {
         std::remove(path_to_train_list.c_str());
     }
@@ -69,20 +108,15 @@ void FilesHandler::splitFilesList(const std::string &path_to_list, int train_dat
         std::remove(path_to_val_list.c_str());
     }
 
-    std::ifstream input_list(path_to_list);
     std::ofstream train_files(path_to_train_list);
     std::ofstream val_files(path_to_val_list);
 
-    int count = 0;
-    while (std::getline(input_list, line)) {
-        // std::cout << line << std::endl;
-        if (count < 0.9 * number_of_lines) {
-            train_files << line << std::endl;
-        } else {
-            val_files << line << std::endl;
-        }
-        count++;
-    }
+    std::ostream_iterator<std::string> train_list_iterator(train_files, "\n");
+    std::copy(path_to_train_files.begin(), path_to_train_files.end(), train_list_iterator);
+
+    std::ostream_iterator<std::string> val_list_iterator(val_files, "\n");
+    std::copy(path_to_val_files.begin(), path_to_val_files.end(), val_list_iterator);
+
 }
 
 void FilesHandler::keepFirstNFiles(const std::string &path_to_files_folder, int N) {
@@ -93,8 +127,6 @@ void FilesHandler::keepFirstNFiles(const std::string &path_to_files_folder, int 
         indexes.insert(i);
     deleteFiles(path_to_files_folder, indexes);
 }
-
-
 
 
 void FilesHandler::renameFiles(const std::string &path_to_files_folder) {
