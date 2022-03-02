@@ -4,7 +4,7 @@
 
 class FilesHandler {
     public:
-        void makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list="./files_list.txt", bool shuffle=true);
+        void makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list="./files_list.txt", bool shuffle=true, bool with_seq_num=true, bool keep_folder_dir=false);
 
 
         void splitFilesList(const std::string &path_to_list, double train_dataset_ratio=0.9, bool shuffle=true, bool remove_margin=true);

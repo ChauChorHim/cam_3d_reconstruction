@@ -58,3 +58,4 @@ include_directories(
 add_executable(test
     test.cpp
 )
+

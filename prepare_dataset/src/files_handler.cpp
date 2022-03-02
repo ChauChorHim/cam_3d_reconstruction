@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <cassert>
 
-void FilesHandler::makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list, bool shuffle) {
+void FilesHandler::makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list, bool shuffle, bool with_seq_num, bool keep_folder_dir) {
 
     std::cout << "-> The path to files list is: " << path_to_list << std::endl;
     if (std::filesystem::exists(path_to_list)) {
@@ -32,12 +32,19 @@ void FilesHandler::makeFilesList(const std::string &path_to_files_folder, const 
         int loc_last_slash = file_name.find_last_of('/');
         file_name = file_name.substr(loc_last_slash+1, file_name.size()-1); // file name with extension
 
-        std::stringstream ss;
-        ss << std::setw(6) << std::setfill('0') << idx;
-        std::string file_name_with_sequence = ss.str() + "_" + file_name;
+        std::string file_list;
+        if (keep_folder_dir) {
+            file_list = path_to_files_folder + file_name;
+        } else {
+            file_list = file_name;
+        }
 
-        // files_list.push_back(std::to_string(idx++) + " " + file_name_with_sequence); 
-        files_list.push_back(std::to_string(idx++) + " " + file_name); 
+        if (with_seq_num) {
+            file_list = std::to_string(idx++) + " " + file_list;
+        } else {
+            file_list = file_list;
+        }
+        files_list.push_back(file_list); 
     }
 
     if(shuffle) {
