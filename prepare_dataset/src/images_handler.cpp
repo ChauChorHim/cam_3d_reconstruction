@@ -17,13 +17,16 @@ void ImagesHandler::readCameraParameters(const std::string &yml_filename){
     }
 
     // Get camera parameters
-    fs["camera_matrix"] >> camera_matrix_;
+    fs["camera_matrix"] >> original_camera_matrix_;
     fs["distortion_coefficients"] >> dist_coeffs_; 
+
+    undistort_camera_matrix_ = cv::getOptimalNewCameraMatrix(original_camera_matrix_, dist_coeffs_, cv::Size(fs["image_width"], fs["image_height"]), 0);
 
     // Print out the camera parameters
     std::cout << "\n -- Camera parameters -- " << std::endl;
-    std::cout << "\n CameraMatrix = " << std::endl << " " << camera_matrix_ << std::endl << std::endl;
-    std::cout << " Distortion coefficients = " << std::endl << " " << dist_coeffs_ << std::endl << std::endl;
+    std::cout << "\n Original CameraMatrix = " << std::endl << " " << original_camera_matrix_ << std::endl << std::endl;
+    std::cout << "\n Distortion coefficients = " << std::endl << " " << dist_coeffs_ << std::endl << std::endl;
+    std::cout << "\n Undistort CameraMatrix = " << std::endl << " " << undistort_camera_matrix_ << std::endl << std::endl;
 
     fs.release();
 }
@@ -58,7 +61,7 @@ void ImagesHandler::undistortImages(const std::string &output_folder_dir){
             exit(EXIT_FAILURE);
         }
         cv::Mat outputImage;
-        cv::undistort(inputImage, outputImage, camera_matrix_, dist_coeffs_);
+        cv::undistort(inputImage, outputImage, original_camera_matrix_, dist_coeffs_, undistort_camera_matrix_);
 
         // Separate filename and path
         size_t found = imagePath->find_last_of("/");
@@ -146,7 +149,8 @@ void ImagesHandler::undistortCropResizeImages(const std::string &output_folder_d
             exit(EXIT_FAILURE);
         }
         cv::Mat outputImage;
-        cv::undistort(inputImage, outputImage, camera_matrix_, dist_coeffs_);
+        cv::undistort(inputImage, outputImage, original_camera_matrix_, dist_coeffs_, undistort_camera_matrix_);
+
         outputImage = outputImage(row_range, col_range);
         cv::resize(outputImage, outputImage, cv::Size(width, height), cv::INTER_LINEAR);
 

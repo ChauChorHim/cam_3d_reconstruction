@@ -38,7 +38,7 @@ int main(int argc, char** argv){
 
     /* lingang_map5/cam00 setting   lingang_map5/cam04 setting */
     imagesHandler.loadImages(input_folder_dir, images_list);
-    imagesHandler.undistortCropResizeImages(output_folder_dir, 1080-960, 1080, 0, 1920, 320, 640);
+    imagesHandler.undistortCropResizeImages(output_folder_dir, 60, 1020, 0, 1920, 320, 640);
 
     // Delete the file list
     std::remove(images_list.c_str());

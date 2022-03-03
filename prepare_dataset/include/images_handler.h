@@ -4,7 +4,8 @@
 
 class ImagesHandler {
     private:
-        cv::Mat camera_matrix_;
+        cv::Mat original_camera_matrix_;
+        cv::Mat undistort_camera_matrix_;
         cv::Mat dist_coeffs_;
         std::vector<std::string> images_path_buffer_;
     
