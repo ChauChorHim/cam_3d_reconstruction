@@ -65,7 +65,7 @@ void Gps2Pose::addGpsData(const std::string& path_to_gps_file) {
         gps_buffer_.push_back(gps_data);
     }
 
-    std::cout << gps_buffer_.size() << std::endl;
+    std::cout << " --- Add " << gps_buffer_.size() << " gps data --- " << std::endl;
 
 }
 
@@ -87,6 +87,7 @@ void Gps2Pose::initializePose() {
     double roll = gps_data_init.roll;
     double pitch = -gps_data_init.pitch;
     double yaw = M_PI / 2. - gps_data_init.yaw * DEG_TO_RAD;
+
     Eigen::Quaterniond q_init = Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()) * 
                                 Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
                                 Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX());

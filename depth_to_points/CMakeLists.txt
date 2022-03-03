@@ -5,6 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(PCL 1.3 REQUIRED COMPONENTS common io)
+
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
@@ -22,5 +27,28 @@ target_include_directories(timestamp_to_pose
     PUBLIC
         ${PROJECT_SOURCE_DIR}/include
 )
+
+add_library(depth_to_points SHARED
+    src/depth_to_points.cpp
+)
+
+target_link_libraries(depth_to_points
+    Eigen3::Eigen
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(depth_to_points
+    PUBLIC
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+add_library(cnpy SHARED
+    src/cnpy.cpp
+)
+target_include_directories(cnpy
+    PUBLIC
+        ${PROJECT_SOURCE_DIR}/include
+)
+
 
 add_subdirectory(examples)

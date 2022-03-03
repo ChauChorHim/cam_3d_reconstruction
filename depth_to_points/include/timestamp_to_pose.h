@@ -1,5 +1,5 @@
-#ifndef _GPS_TO_POSE_H_
-#define _GPS_TO_POSE_H_
+#ifndef _TIMESTAMP_TO_POSE_H_
+#define _TIMESTAMP_TO_POSE_H_
 
 #include <Eigen/Dense>
 #include <string>
