@@ -22,7 +22,7 @@ private:
     std::vector<GpsData> gps_buffer_;
     int last_search_index_;
 
-    void gps2Pose(GpsData& gps_data, Eigen::Vector3d& pos, Eigen::Quaterniond& q_inv);
+    void gps2Pose(GpsData& gps_data, Eigen::Vector3d& pos, Eigen::Quaterniond& q);
     bool compareTimestamp(const std::string& timestamp_1, const std::string& timestamp_2);
     void showGpsData(const GpsData& gps_data);
     void timestamp2Gps(const std::string& timestamp, GpsData& gps_data);
@@ -30,8 +30,8 @@ private:
 public:
     Gps2Pose();
     void addGpsData(const std::string& path_to_gps_file);
-    void initializePose();
-    void timestamp2Pose(const std::string& timestamp, Eigen::Vector3d& pos, Eigen::Quaterniond& q_inv);
+    void initializePose(GpsData *gps_data_init);
+    void timestamp2Pose(const std::string& timestamp, Eigen::Vector3d& pos, Eigen::Quaterniond& q);
 };
 
 #endif

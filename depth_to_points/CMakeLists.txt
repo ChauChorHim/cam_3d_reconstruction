@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
-find_package(PCL 1.3 REQUIRED COMPONENTS common io)
+find_package(PCL REQUIRED COMPONENTS common io)
 
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
@@ -35,6 +35,7 @@ add_library(depth_to_points SHARED
 target_link_libraries(depth_to_points
     Eigen3::Eigen
     ${OpenCV_LIBS}
+    ${PCL_LIBRARIES}
 )
 
 target_include_directories(depth_to_points

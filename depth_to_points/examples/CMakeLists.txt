@@ -11,6 +11,7 @@ target_link_libraries(test_depth_to_points
         ${PROJECT_SOURCE_DIR}/lib/libcnpy.so
         Eigen3::Eigen
         ${OpenCV_LIBS}
+        ${PCL_LIBRARIES}
 )
 
 target_include_directories(test_depth_to_points

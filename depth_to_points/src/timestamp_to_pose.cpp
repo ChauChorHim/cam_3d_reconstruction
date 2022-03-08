@@ -81,12 +81,13 @@ void Gps2Pose::showGpsData(const GpsData& gps_data) {
 }
 
 
-void Gps2Pose::initializePose() {
-    GpsData gps_data_init = gps_buffer_[0];
+void Gps2Pose::initializePose(GpsData *gps_data_init) {
+    if(gps_data_init == nullptr)
+        gps_data_init = &gps_buffer_[0];
 
-    double roll = gps_data_init.roll;
-    double pitch = -gps_data_init.pitch;
-    double yaw = M_PI / 2. - gps_data_init.yaw * DEG_TO_RAD;
+    double roll = gps_data_init->roll;
+    double pitch = -gps_data_init->pitch;
+    double yaw = M_PI / 2. - gps_data_init->yaw * DEG_TO_RAD;
 
     Eigen::Quaterniond q_init = Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()) * 
                                 Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
@@ -96,31 +97,34 @@ void Gps2Pose::initializePose() {
     double utm_east_init = 0.;
     double utm_north_init = 0.;
     double utm_up_init = 0.;
-    aw::coord::GPS2UTM(gps_data_init.longitude,
-                       gps_data_init.latitude, 
-                       gps_data_init.altitude,
+    aw::coord::GPS2UTM(gps_data_init->latitude,
+                       gps_data_init->longitude, 
+                       gps_data_init->altitude,
                        &utm_east_init, 
                        &utm_north_init, 
                        &utm_up_init);
 
     pos_init_ = Eigen::Vector3d(utm_east_init, utm_north_init, utm_up_init);
+
+    std::cout << " --- pos_init_: " << pos_init_[0] << " " << pos_init_[1] << " " << pos_init_[2] << " --- \n\n";
 }
     
-void Gps2Pose::gps2Pose(GpsData& gps_data, Eigen::Vector3d& pos, Eigen::Quaterniond& q_inv) {
+void Gps2Pose::gps2Pose(GpsData& gps_data, Eigen::Vector3d& pos, Eigen::Quaterniond& q) {
+
     double roll = gps_data.roll;
     double pitch = -gps_data.pitch;
     double yaw = M_PI / 2 - gps_data.yaw * DEG_TO_RAD;
-    Eigen::Quaterniond q = Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()) * 
+    Eigen::Quaterniond q_tmp = Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()) * 
                            Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
                            Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX());
 
-    q = q_init_inv_ * q;
-    
+    q = q_init_inv_ * q_tmp;
+
     double utm_east = 0.;
     double utm_north = 0.;
     double utm_up = 0.;
-    aw::coord::GPS2UTM(gps_data.longitude,
-                       gps_data.latitude, 
+    aw::coord::GPS2UTM(gps_data.latitude,
+                       gps_data.longitude, 
                        gps_data.altitude,
                        &utm_east, 
                        &utm_north, 
@@ -128,14 +132,6 @@ void Gps2Pose::gps2Pose(GpsData& gps_data, Eigen::Vector3d& pos, Eigen::Quaterni
     pos = Eigen::Vector3d(utm_east, utm_north, utm_up);
 
     pos = q_init_inv_.toRotationMatrix() * (pos - pos_init_);
-
-    // std::cout << pos[0] << " " << pos[1]  << " " << pos[2] << "\n";
-
-    // std::ofstream test_file("./test.txt", std::ios::out | std::ios::app);
-    // double x = pos[0], y = pos[1], z = pos[2];
-    // test_file << std::to_string(x) << " " << std::to_string(y) << " " << std::to_string(z) << "\n";
-    // test_file.close();
-
 }
 
 // If the first timestamp is smaller than the second one, than return true
