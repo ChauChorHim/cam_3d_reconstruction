@@ -43,13 +43,5 @@ target_include_directories(depth_to_points
         ${PROJECT_SOURCE_DIR}/include
 )
 
-add_library(cnpy SHARED
-    src/cnpy.cpp
-)
-target_include_directories(cnpy
-    PUBLIC
-        ${PROJECT_SOURCE_DIR}/include
-)
-
 
 add_subdirectory(examples)
