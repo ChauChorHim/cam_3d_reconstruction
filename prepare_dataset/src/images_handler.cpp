@@ -140,7 +140,12 @@ void ImagesHandler::undistortCropResizeImages(const std::string &output_folder_d
     cv::Range row_range = row_1 < row_2 ? cv::Range(row_1, row_2) : cv::Range(row_2, row_1);
     cv::Range col_range = col_1 < col_2 ? cv::Range(col_1, col_2) : cv::Range(col_2, col_1);
 
+    size_t idx = 0;
+
     for(auto imagePath = images_path_buffer_.begin(); imagePath != images_path_buffer_.end(); ++imagePath) {
+        if (idx % 1000 == 1) {
+            std::cout << "Current index/All images " << idx++ << "/" << images_path_buffer_.size() << "\n";
+        } 
         cv::Mat inputImage = cv::imread(*imagePath, cv::IMREAD_COLOR);
         if( !inputImage.data ){
             std::cout << " Could not open or find the image: " << *imagePath << std::endl;
