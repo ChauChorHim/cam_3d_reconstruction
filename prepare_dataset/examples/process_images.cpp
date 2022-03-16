@@ -37,12 +37,12 @@ int main(int argc, char** argv){
     // imagesHandler.undistortCropResizeImages(output_folder_dir, 0, 640, 0, 1280, 320, 640);
 
     /* lingang_map5/cam00 setting   lingang_map5/cam04 setting */
-    imagesHandler.loadImages(input_folder_dir, images_list);
-    imagesHandler.undistortCropResizeImages(output_folder_dir, 60, 1020, 0, 1920, 320, 640);
+    // imagesHandler.loadImages(input_folder_dir, images_list);
+    // imagesHandler.undistortCropResizeImages(output_folder_dir, 60, 1020, 0, 1920, 320, 640);
 
     /* kitti size lingang_map5/cam00 setting   lingang_map5/cam04 setting */
-    // imagesHandler.loadImages(input_folder_dir, images_list);
-    // imagesHandler.undistortCropResizeImages(output_folder_dir, 504, 1080, 0, 1920, 192, 640);
+    imagesHandler.loadImages(input_folder_dir, images_list);
+    imagesHandler.undistortCropResizeImages(output_folder_dir, 300, 504, 1080, 0, 1920, 192, 640);
 
     // Delete the file list
     std::remove(images_list.c_str());

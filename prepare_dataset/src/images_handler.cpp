@@ -132,7 +132,7 @@ void ImagesHandler::resizeImages(const size_t height, const size_t width, const 
     std::cout << " Done !" << std::endl;
 }
 
-void ImagesHandler::undistortCropResizeImages(const std::string &output_folder_dir, const size_t row_1, const size_t row_2, const size_t col_1, const size_t col_2, const size_t height, const size_t width) {
+void ImagesHandler::undistortCropResizeImages(const std::string &output_folder_dir, const size_t num_images, const size_t row_1, const size_t row_2, const size_t col_1, const size_t col_2, const size_t height, const size_t width) {
     std::cout << " Undistort images -> Crop images -> Resize images " << std::endl;
 
     assert(("row_1 should not be equal to row_2\n", row_1 != row_2));
@@ -142,7 +142,7 @@ void ImagesHandler::undistortCropResizeImages(const std::string &output_folder_d
 
     size_t idx = 0;
 
-    for(auto imagePath = images_path_buffer_.begin(); imagePath != images_path_buffer_.end(); ++imagePath) {
+    for(auto imagePath = images_path_buffer_.begin(); imagePath != images_path_buffer_.begin()+num_images; ++imagePath) {
         if (idx % 1000 == 1) {
             std::cout << "Current index/All images " << idx++ << "/" << images_path_buffer_.size() << "\n";
         } 
