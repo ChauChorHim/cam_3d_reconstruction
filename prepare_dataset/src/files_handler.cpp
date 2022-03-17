@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <cassert>
 
-void FilesHandler::makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list, bool shuffle, bool with_seq_num, bool keep_folder_dir) {
+void FilesHandler::makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list, bool shuffle, bool with_seq_num, bool keep_folder_dir, bool keep_extension) {
 
     std::cout << "-> The path to files list is: " << path_to_list << std::endl;
     if (std::filesystem::exists(path_to_list)) {
@@ -30,7 +30,13 @@ void FilesHandler::makeFilesList(const std::string &path_to_files_folder, const 
         std::string file_name (path_to_file);
 
         int loc_last_slash = file_name.find_last_of('/');
-        file_name = file_name.substr(loc_last_slash+1, file_name.size()-1); // file name with extension
+        if (keep_extension) {
+            file_name = file_name.substr(loc_last_slash+1); // file name with extension
+        } else {
+            int loc_last_dot = file_name.find_last_of('.');
+            file_name = file_name.substr(loc_last_slash+1, loc_last_dot - (loc_last_slash+1)); // file name without extension (aka timestamp)
+        }
+        
 
         std::string file_list;
         if (keep_folder_dir) {

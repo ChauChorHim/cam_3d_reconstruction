@@ -4,7 +4,7 @@
 #include <fstream>
 
 #include <opencv2/highgui/highgui.hpp>
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 
 // Read a YAML file with the camera parameters (cameraMatrix and distCoeffs)
