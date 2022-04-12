@@ -19,18 +19,30 @@ int main() {
     Eigen::Vector3d pos; 
     Eigen::Quaterniond q;
 
-    bool is_remove_header = false;
     int i = 0;
     std::ofstream path_to_pose_file ("./poses.txt");
-    while(std::getline(timestamp_file, cur_timestamp)) {
-        if (!is_remove_header) {
-            std::getline(timestamp_file, cur_timestamp);
-            is_remove_header = true;
+    /* get absolute pose */
+    // while(std::getline(timestamp_file, cur_timestamp)) {
+    //     pose_handler.getAbsolutePose(cur_timestamp, pos, q);
+    //     path_to_pose_file << std::to_string(q.x()) << " " << std::to_string(q.y()) << " " << std::to_string(q.z()) << " " << std::to_string(q.w()) << " " << std::to_string(pos[0]) << " " << std::to_string(pos[1]) << " " << std::to_string(pos[2]) << "\n";
+    //     // path_to_pose_file << std::to_string(pos[0]) << " " << std::to_string(pos[1]) << " " << std::to_string(pos[2]) << "\n";
+    // }
+
+    /* get relative pose */
+    std::string pre_timestamp;
+    bool is_init_frame = true;
+    while (std::getline(timestamp_file, cur_timestamp)) {
+        if (is_init_frame) {
+            is_init_frame = false;
+            pre_timestamp = cur_timestamp;
+            continue;
         }
-        pose_handler.getAbsolutePose(cur_timestamp, pos, q);
-        path_to_pose_file << std::to_string(q.x()) << " " << std::to_string(q.y()) << " " << std::to_string(q.z()) << " " << std::to_string(q.w()) << " " << std::to_string(pos[0]) << " " << std::to_string(pos[1]) << " " << std::to_string(pos[2]) << "\n";
-        // std::cout << i++ << "\n";
+        pose_handler.getRelativePose(pre_timestamp, cur_timestamp, pos, q);
+        path_to_pose_file << std::to_string(i++) << " " << std::to_string(q.x()) << " " << std::to_string(q.y()) << " " << std::to_string(q.z()) << " " << std::to_string(q.w()) << " " << std::to_string(pos[0]) << " " << std::to_string(pos[1]) << " " << std::to_string(pos[2]) << "\n";
+        pre_timestamp = cur_timestamp;
     }
+
+
     path_to_pose_file.close();
 
     std::remove(path_to_temp_timestamp_file.c_str());

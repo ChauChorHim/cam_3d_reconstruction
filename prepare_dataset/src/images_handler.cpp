@@ -157,6 +157,7 @@ void ImagesHandler::undistortCropResizeImages(const std::string &output_folder_d
         cv::undistort(inputImage, outputImage, original_camera_matrix_, dist_coeffs_, undistort_camera_matrix_);
 
         outputImage = outputImage(row_range, col_range);
+
         cv::resize(outputImage, outputImage, cv::Size(width, height), cv::INTER_LINEAR);
 
         // Separate filename and path
