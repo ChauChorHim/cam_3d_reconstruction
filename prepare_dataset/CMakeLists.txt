@@ -15,6 +15,9 @@ include_directories(
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
+SET(CMAKE_BUILD_TYPE "Release")
+# SET(CMAKE_BUILD_TYPE "Debug")
+
 # ------------------------------------------------------------ #
 
 add_library(images_handler SHARED 
@@ -65,12 +68,21 @@ target_link_libraries(make_train_val_files
 
 # ------------------------------------------------------------ #
 
-add_executable(extract_poses
-    ${CMAKE_SOURCE_DIR}/examples/extract_poses.cpp
+# add_executable(extract_poses
+#     ${CMAKE_SOURCE_DIR}/examples/extract_poses.cpp
+# )
+# target_link_libraries(extract_poses
+#     poses_handler
+#     files_handler
+# )
+
+# ------------------------------------------------------------ #
+
+
+add_executable(remove_static_scene
+    ${CMAKE_SOURCE_DIR}/examples/remove_static_scene.cpp
 )
-target_link_libraries(extract_poses
-    poses_handler
+target_link_libraries(remove_static_scene
+    images_handler
     files_handler
 )
-
-

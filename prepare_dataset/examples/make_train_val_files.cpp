@@ -22,10 +22,7 @@ int main(int argc, char** argv){
 
     /* make train_files.txt, val_files.txt; Carefule: don't shuffle when making the image_files.txt */
     // files_handler.makeFilesList(input_folder_dir, output_folder_dir+"image_files.txt", false);
-    // files_handler.splitFilesList(output_folder_dir+"image_files.txt", 0.9, true, true);
+    files_handler.splitFilesList(output_folder_dir+"image_files.txt", 0.9, true, true);
 
-    /* delete files */
-    files_handler.keepFirstNFiles(input_folder_dir, 300);
-    
     return 0;
 }

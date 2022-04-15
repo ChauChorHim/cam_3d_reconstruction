@@ -1,0 +1,9 @@
+build/
+.vscode/
+lib/libfiles_handler.so
+lib/libimages_handler.so
+lib/libposes_handler.so
+examples/process_images
+examples/remove_static_scene
+examples/*.sh
+README.md

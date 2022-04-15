@@ -32,22 +32,17 @@ int main(int argc, char** argv){
     imagesHandler.readCameraParameters(yml_filename);
 
 
-    /* lingang_map4/cam00 setting */
-    // imagesHandler.loadImages(input_folder_dir, images_list);
-    // imagesHandler.undistortCropResizeImages(output_folder_dir, 0, 640, 0, 1280, 320, 640);
-
-    /* lingang_map5/cam00 setting   lingang_map5/cam04 setting */
-    // imagesHandler.loadImages(input_folder_dir, images_list);
-    // imagesHandler.undistortCropResizeImages(output_folder_dir, 24833, 60, 1020, 0, 1920, 320, 640);
-
-    /* kitti size lingang_map5/cam00 setting   lingang_map5/cam04 setting */
-    imagesHandler.loadImages(input_folder_dir, images_list);
-    imagesHandler.undistortCropResizeImages(output_folder_dir, 5000, 504, 1080, 0, 1920, 192, 640);
-
     /* full size lingang_map5/cam00 setting */
     // imagesHandler.loadImages(input_folder_dir, images_list);
     // imagesHandler.undistortCropResizeImages(output_folder_dir, 24833, 1080/2, 1080/2+32*10, 0+32*4, 1920-32*4, 320, 1920-32*8);
-    // imagesHandler.undistortImages(output_folder_dir);
+
+    /* full size distorted lingang_map5/cam00 setting */
+    // imagesHandler.loadImages(input_folder_dir, images_list);
+    // imagesHandler.cropImages(120, 1080, 0, 1920, output_folder_dir);
+
+    /* full size undistorted lingang_map5/cam00 setting */
+    imagesHandler.loadImages(input_folder_dir, images_list);
+    imagesHandler.undistortCropResizeImages(output_folder_dir, 24828, 120, 952, 0 + 32*4, 1920-32*4, 832, 1664);
 
     // Delete the file list
     std::remove(images_list.c_str());
