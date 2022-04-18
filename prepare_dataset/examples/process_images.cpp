@@ -41,8 +41,13 @@ int main(int argc, char** argv){
     // imagesHandler.cropImages(120, 1080, 0, 1920, output_folder_dir);
 
     /* full size undistorted lingang_map5/cam00 setting */
+    // imagesHandler.loadImages(input_folder_dir, images_list);
+    // imagesHandler.undistortCropResizeImages(output_folder_dir, 24828, 120, 952, 0 + 32*4, 1920-32*4, 832, 1664);
+
+    /* only undistort images */
     imagesHandler.loadImages(input_folder_dir, images_list);
-    imagesHandler.undistortCropResizeImages(output_folder_dir, 24828, 120, 952, 0 + 32*4, 1920-32*4, 832, 1664);
+    // imagesHandler.undistortImages(output_folder_dir);
+    imagesHandler.cropImages(400, 880, 70, 1830, output_folder_dir);
 
     // Delete the file list
     std::remove(images_list.c_str());

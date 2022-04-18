@@ -22,7 +22,7 @@ void ImagesHandler::readCameraParameters(const std::string &yml_filename){
     fs["camera_matrix"] >> original_camera_matrix_;
     fs["distortion_coefficients"] >> dist_coeffs_; 
 
-    undistort_camera_matrix_ = cv::getOptimalNewCameraMatrix(original_camera_matrix_, dist_coeffs_, cv::Size(fs["image_width"], fs["image_height"]), 1);
+    undistort_camera_matrix_ = cv::getOptimalNewCameraMatrix(original_camera_matrix_, dist_coeffs_, cv::Size(fs["image_width"], fs["image_height"]), 1, cv::Size(fs["image_width"], fs["image_height"]));
 
     // Print out the camera parameters
     std::cout << "\n -- Camera parameters -- " << std::endl;

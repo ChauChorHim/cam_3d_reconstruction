@@ -35,11 +35,14 @@ add_library(files_handler SHARED
 
 # ------------------------------------------------------------ #
 
+add_library(gps_handler SHARED
+    ${CMAKE_SOURCE_DIR}/src/gps_handler.cpp
+)
+
+# ------------------------------------------------------------ #
+
 add_library(poses_handler SHARED
     ${CMAKE_SOURCE_DIR}/src/poses_handler.cpp
-)
-target_link_libraries(poses_handler
-    ${CMAKE_SOURCE_DIR}/lib/libtimestamp_to_pose.so
 )
 
 # ------------------------------------------------------------ #
@@ -68,13 +71,14 @@ target_link_libraries(make_train_val_files
 
 # ------------------------------------------------------------ #
 
-# add_executable(extract_poses
-#     ${CMAKE_SOURCE_DIR}/examples/extract_poses.cpp
-# )
-# target_link_libraries(extract_poses
-#     poses_handler
-#     files_handler
-# )
+add_executable(extract_poses
+    ${CMAKE_SOURCE_DIR}/examples/extract_poses.cpp
+)
+target_link_libraries(extract_poses
+    poses_handler
+    gps_handler
+    files_handler
+)
 
 # ------------------------------------------------------------ #
 

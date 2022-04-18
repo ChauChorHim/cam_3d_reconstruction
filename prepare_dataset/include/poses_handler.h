@@ -4,21 +4,25 @@
 #include <eigen3/Eigen/Dense>
 #include <vector>
 #include <string>
-#include "timestamp_to_pose.h"
 
 class PosesHandler {
 
 public:
     explicit PosesHandler();
-    void addGpsData(const std::string& path_to_gps_file);
     void getRelativePose(
-        const std::string &source_timestamp, const std::string &target_timestamp, Eigen::Vector3d& pos, Eigen::Quaterniond& q);
-    void getAbsolutePose(
-        const std::string &timestamp, Eigen::Vector3d& pos, Eigen::Quaterniond& q);
+        const Eigen::Vector3d &source_pos, const Eigen::Vector3d &target_pos, 
+        const Eigen::Quaterniond &source_q, const Eigen::Quaterniond &target_q,
+        Eigen::Vector3d &relative_pos, Eigen::Quaterniond &relative_q);
+    // void getAbsolutePose(
+    //     const std::string &timestamp, Eigen::Vector3d& pos, Eigen::Quaterniond& q);
+
+    // void setInitPose(Eigen::Vector3d& pos_init, Eigen::Quaterniond& q_init);
+    // void getInitPose(Eigen::Vector3d& pos_init, Eigen::Quaterniond& q_init);
 
 private:
-    std::string path_to_gps_file_;
-    Gps2Pose gps_to_pose_;
+    // Eigen::Vector3d pos_init_;
+    // Eigen::Quaterniond q_init_;
+    // Eigen::Quaterniond q_init_inv_;
 };
 
 #endif
