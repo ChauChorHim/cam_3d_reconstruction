@@ -51,7 +51,8 @@ int main() {
         gps_handler.gps2UtmPose(cur_gps_data, cur_pos, cur_q);
 
         pose_handler.getRelativePose(pre_pos, cur_pos, pre_q, cur_q, relative_pos, relative_q);
-        path_to_pose_file << std::to_string(i++) << " " << std::to_string(relative_q.x()) << " " 
+        path_to_pose_file << cur_timestamp << " " 
+                          << std::to_string(relative_q.x()) << " " 
                           << std::to_string(relative_q.y()) << " " 
                           << std::to_string(relative_q.z()) << " " 
                           << std::to_string(relative_q.w()) << " " 
