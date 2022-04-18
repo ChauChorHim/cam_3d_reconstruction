@@ -6,6 +6,7 @@ lib/libposes_handler.so
 examples/process_images
 examples/remove_static_scene
 examples/extract_poses
+examples/make_train_val_files
 examples/*.sh
 examples/poses.txt
 README.md
