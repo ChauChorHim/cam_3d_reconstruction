@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     float fy = (float)strtod(argv[2], nullptr);
     float cx = (float)strtod(argv[3], nullptr);
     float cy = (float)strtod(argv[4], nullptr);
-    PointCloudSaver point_cloud_saver = PointCloudSaver(fx, fy, cx, cy);
+    cch::PointCloudSaver point_cloud_saver = cch::PointCloudSaver(fx, fy, cx, cy);
 
     std::string path_to_depth_npy {argv[5]};
     std::string path_to_image {argv[6]};
