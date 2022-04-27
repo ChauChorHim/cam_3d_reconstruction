@@ -18,36 +18,21 @@ int main(int argc, char** argv){
         printHelp(argv[0]);
     }
 
-    ImagesHandler imagesHandler = ImagesHandler();
+    cch::ImagesHandler imagesHandler = cch::ImagesHandler();
     std::string yml_filename(argv[1]);
     std::string input_folder_dir(argv[2]);
     std::string output_folder_dir(argv[3]);
 
     // Make a temporary file list (to be delted at the end)
     std::string images_list {"./images_list_to_be_delete.txt"};
-    FilesHandler filesHandler = FilesHandler();
-    filesHandler.makeFilesList(input_folder_dir, images_list, false);
+    cch::makeFilesList(input_folder_dir, images_list);
 
     // Read the intrinsics
     imagesHandler.readCameraParameters(yml_filename);
 
-
-    /* full size lingang_map5/cam00 setting */
-    // imagesHandler.loadImages(input_folder_dir, images_list);
-    // imagesHandler.undistortCropResizeImages(output_folder_dir, 24833, 1080/2, 1080/2+32*10, 0+32*4, 1920-32*4, 320, 1920-32*8);
-
-    /* full size distorted lingang_map5/cam00 setting */
-    // imagesHandler.loadImages(input_folder_dir, images_list);
-    // imagesHandler.cropImages(120, 1080, 0, 1920, output_folder_dir);
-
-    /* full size undistorted lingang_map5/cam00 setting */
-    // imagesHandler.loadImages(input_folder_dir, images_list);
-    // imagesHandler.undistortCropResizeImages(output_folder_dir, 24828, 120, 952, 0 + 32*4, 1920-32*4, 832, 1664);
-
-    /* only undistort images */
     imagesHandler.loadImages(input_folder_dir, images_list);
     // imagesHandler.undistortImages(output_folder_dir);
-    imagesHandler.cropImages(400, 880, 70, 1830, output_folder_dir);
+    imagesHandler.cropImages(576, 1536, 600, 960, output_folder_dir); // manydepth cityscape size
 
     // Delete the file list
     std::remove(images_list.c_str());

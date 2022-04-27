@@ -23,13 +23,12 @@ int main(int argc, char** argv){
         printHelp(argv[0]);
     }
 
-    ImagesHandler imagesHandler = ImagesHandler();
+    cch::ImagesHandler imagesHandler = cch::ImagesHandler();
     std::string input_folder_dir(argv[1]);
     std::string output_folder_dir(argv[2]);
 
     std::string images_list {"./images_list_to_be_delete.txt"};
-    FilesHandler filesHandler = FilesHandler();
-    filesHandler.makeFilesList(input_folder_dir, images_list, false);
+    cch::makeFilesList(input_folder_dir, images_list);
 
     imagesHandler.loadImages(input_folder_dir, images_list);
 

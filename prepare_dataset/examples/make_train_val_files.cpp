@@ -16,13 +16,20 @@ int main(int argc, char** argv){
         printHelp(argv[0]);
     }
 
-    FilesHandler files_handler = FilesHandler();
     std::string input_folder_dir(argv[1]);
     std::string output_folder_dir(argv[2]);
 
-    /* make train_files.txt, val_files.txt; Carefule: don't shuffle when making the image_files.txt */
-    // files_handler.makeFilesList(input_folder_dir, output_folder_dir+"image_files.txt", false);
-    files_handler.splitFilesList(output_folder_dir+"image_files.txt", 0.9, true, true);
+
+    cch::makeFilesList(input_folder_dir, output_folder_dir + "/image_files.txt");
+
+    cch::splitFilesList(
+        output_folder_dir + "/image_files.txt", 
+        0.9, 
+        output_folder_dir + "/train_files.txt", 
+        output_folder_dir + "/val_files.txt");
+
+    cch::shuffleList(output_folder_dir + "/train_files.txt");
+    cch::shuffleList(output_folder_dir + "/val_files.txt");
 
     return 0;
 }

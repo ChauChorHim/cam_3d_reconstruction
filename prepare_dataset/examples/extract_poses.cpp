@@ -1,5 +1,4 @@
 #include "poses_handler.h"
-// #include "files_handler.h"
 #include "gps_handler.h"
 #include <fstream>
 #include <iostream>
@@ -8,7 +7,7 @@
 int main() {
 
     std::string path_to_gps_file {"/home/Autowise/data/autowise/lingang_map5/raw/lingang_map5.csv"};    
-    auto gps_handler = GpsHandler(path_to_gps_file);
+    auto gps_handler = cch::GpsHandler(path_to_gps_file);
 
     // std::string path_to_image_folder {"/home/Autowise/data/autowise/lingang_map5/cam00/cropped_cam00/"};
     std::string path_to_temp_timestamp_file {"/home/Autowise/data/autowise/lingang_map5/cam00/image_files.txt"};
@@ -16,12 +15,12 @@ int main() {
     // auto files_handler = FilesHandler();
     // files_handler.makeFilesList(path_to_image_folder, path_to_temp_timestamp_file, false, false, false, false);
 
-    auto pose_handler = PosesHandler();
+    auto pose_handler = cch::PosesHandler();
     std::ifstream timestamp_file (path_to_temp_timestamp_file);
 
     std::string cur_timestamp;
 
-    GpsData cur_gps_data;
+    cch::GpsData cur_gps_data;
 
     Eigen::Vector3d relative_pos; 
     Eigen::Vector3d pre_pos;
@@ -46,7 +45,7 @@ int main() {
 
         if (is_init_frame) {
             is_init_frame = false;
-            GpsData pre_gps_data;
+            cch::GpsData pre_gps_data;
             std::string pre_timestamp = cur_timestamp;
             gps_handler.timestamp2Gps(pre_timestamp, pre_gps_data);
             gps_handler.gps2UtmPose(pre_gps_data, pre_pos, pre_q);
@@ -76,7 +75,7 @@ int main() {
     path_to_translation_file.close();
     path_to_pose_file.close();
 
-    // std::remove(path_to_temp_timestamp_file.c_str());
+    std::remove(path_to_temp_timestamp_file.c_str());
 
     return 0;
 }
