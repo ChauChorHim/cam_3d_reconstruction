@@ -13,8 +13,17 @@
 
 namespace cch {
 
+struct FileToDelete {
+public:
+    FileToDelete(std::string path_to_file);
+    ~FileToDelete();
+    std::string get_file_path();
+private:
+    std::string path_to_file_;
+};
 
-void makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list);
+
+int makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list);
 
 void splitFilesList(
     const std::string &path_to_list, 
@@ -26,7 +35,19 @@ void shuffleList(const std::string &path_to_list);
 
 /* --------------------------------------------------------------------------------- */
 
-void makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list) {
+FileToDelete::FileToDelete(std::string path_to_file) : path_to_file_{path_to_file} {
+
+}
+
+FileToDelete::~FileToDelete() {
+    std::remove(path_to_file_.c_str());
+}
+
+std::string FileToDelete::get_file_path() {
+    return path_to_file_;
+}
+
+int makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list) {
 
     std::cout << "-> The path to files list is: " << path_to_list << std::endl;
 
@@ -58,6 +79,8 @@ void makeFilesList(const std::string &path_to_files_folder, const std::string &p
     std::ofstream list_file(path_to_list);
     std::ostream_iterator<std::string> list_iterator(list_file, "\n");
     std::copy(files_list.begin(), files_list.end(), list_iterator);
+
+    return idx;
 }
 
 void splitFilesList(

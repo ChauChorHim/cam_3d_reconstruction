@@ -117,9 +117,9 @@ void GpsHandler::showGpsData(const GpsData& gps_data) {
 
 
 void GpsHandler::gps2UtmPose(GpsData& gps_data, Eigen::Vector3d& pos, Eigen::Quaterniond& q) {
-    double roll = gps_data.roll;
-    double pitch = -gps_data.pitch;
-    double yaw = M_PI / 2 - gps_data.yaw * DEG_TO_RAD;
+    double roll = gps_data.roll * DEG_TO_RAD;
+    double pitch = -gps_data.pitch * DEG_TO_RAD;
+    double yaw = M_PI / 2. - gps_data.yaw * DEG_TO_RAD;
     q = Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()) * 
         Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
         Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX());

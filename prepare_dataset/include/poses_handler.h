@@ -34,8 +34,8 @@ void PosesHandler::getRelativePose(
     const Eigen::Quaterniond &source_q, const Eigen::Quaterniond &target_q,
     Eigen::Vector3d &relative_pos, Eigen::Quaterniond &relative_q) {
 
-    relative_q = target_q.inverse() * source_q;
-    relative_pos = target_q.inverse() * (source_pos - target_pos);
+    relative_q = source_q.inverse() * target_q;
+    relative_pos = source_q.inverse() * (target_pos - source_pos);
 }
 
 };

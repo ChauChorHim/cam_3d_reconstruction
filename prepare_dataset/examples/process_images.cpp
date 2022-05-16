@@ -14,7 +14,7 @@ void printHelp(char* programName){
 
 int main(int argc, char** argv){
     if(argc != 4){
-        std::cout << " Wrong number of arguments (!=5) " << std::endl;
+        std::cout << " Wrong number of arguments (!=4) " << std::endl;
         printHelp(argv[0]);
     }
 

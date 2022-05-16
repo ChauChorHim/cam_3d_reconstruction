@@ -5,5 +5,10 @@ examples/remove_static_scene
 examples/extract_poses
 examples/make_train_val_files
 examples/*.sh
+examples/*.txt
 examples/poses.txt
+assets/
+bin/
+scripts/
 README.md
+examples/make_ba_dataset.cpp

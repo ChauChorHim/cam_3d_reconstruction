@@ -12,8 +12,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
 )
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
 SET(CMAKE_BUILD_TYPE "Release")
 # SET(CMAKE_BUILD_TYPE "Debug")
@@ -21,7 +19,7 @@ SET(CMAKE_BUILD_TYPE "Release")
 
 # ------------------------------------------------------------ #
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/examples)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 # ------------------------------------------------------------ #
 
@@ -48,4 +46,16 @@ add_executable(extract_poses
 
 add_executable(remove_static_scene
     ${CMAKE_SOURCE_DIR}/examples/remove_static_scene.cpp
+)
+target_link_libraries(remove_static_scene 
+    ${OpenCV_LIBS} 
+)
+
+# ------------------------------------------------------------ #
+
+add_executable(make_ba_dataset
+    ${CMAKE_SOURCE_DIR}/examples/make_ba_dataset.cpp
+)
+target_link_libraries(make_ba_dataset
+    ${OpenCV_LIBS}
 )
