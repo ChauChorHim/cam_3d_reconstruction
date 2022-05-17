@@ -7,29 +7,15 @@
 
 namespace cch {
 
-class PosesHandler {
+/*
+    Given R1, t1 and R2, t2 in the same coordinates, compute the R and t between q1 and q2 -> q2 = R2^{-1} R1 q1 + R2^{-1} (t1 - t2)
+*/
+void getRelativePose(
+    const Eigen::Vector3d &source_pos, const Eigen::Vector3d &target_pos, 
+    const Eigen::Quaterniond &source_q, const Eigen::Quaterniond &target_q,
+    Eigen::Vector3d &relative_pos, Eigen::Quaterniond &relative_q);
 
-public:
-    explicit PosesHandler();
-    void getRelativePose(
-        const Eigen::Vector3d &source_pos, const Eigen::Vector3d &target_pos, 
-        const Eigen::Quaterniond &source_q, const Eigen::Quaterniond &target_q,
-        Eigen::Vector3d &relative_pos, Eigen::Quaterniond &relative_q);
-    // void getAbsolutePose(
-    //     const std::string &timestamp, Eigen::Vector3d& pos, Eigen::Quaterniond& q);
-
-    // void setInitPose(Eigen::Vector3d& pos_init, Eigen::Quaterniond& q_init);
-    // void getInitPose(Eigen::Vector3d& pos_init, Eigen::Quaterniond& q_init);
-
-private:
-    // Eigen::Vector3d pos_init_;
-    // Eigen::Quaterniond q_init_;
-    // Eigen::Quaterniond q_init_inv_;
-};
-
-PosesHandler::PosesHandler() {}
-
-void PosesHandler::getRelativePose(
+void getRelativePose(
     const Eigen::Vector3d &source_pos, const Eigen::Vector3d &target_pos, 
     const Eigen::Quaterniond &source_q, const Eigen::Quaterniond &target_q,
     Eigen::Vector3d &relative_pos, Eigen::Quaterniond &relative_q) {

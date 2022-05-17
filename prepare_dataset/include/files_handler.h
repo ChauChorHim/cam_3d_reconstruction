@@ -13,81 +13,56 @@
 
 namespace cch {
 
-struct FileToDelete {
-public:
-    FileToDelete(std::string path_to_file);
-    ~FileToDelete();
-    std::string get_file_path();
-private:
-    std::string path_to_file_;
-};
-
-
 int makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list);
 
 void splitFilesList(
     const std::string &path_to_list, 
-    double split_ratio=0.9, 
     const std::string &path_to_first_list = "./train_files.txt",
-    const std::string &path_to_second_list = "./val_files.txt");
+    const std::string &path_to_second_list = "./val_files.txt",
+    double split_ratio=0.9);
 
 void shuffleList(const std::string &path_to_list);
 
+bool validateFolderDir(std::string &folder_dir);
+
 /* --------------------------------------------------------------------------------- */
-
-FileToDelete::FileToDelete(std::string path_to_file) : path_to_file_{path_to_file} {
-
-}
-
-FileToDelete::~FileToDelete() {
-    std::remove(path_to_file_.c_str());
-}
-
-std::string FileToDelete::get_file_path() {
-    return path_to_file_;
-}
 
 int makeFilesList(const std::string &path_to_files_folder, const std::string &path_to_list) {
 
     std::cout << "-> The path to files list is: " << path_to_list << std::endl;
-
-    if (std::filesystem::exists(path_to_list)) {
-        std::remove(path_to_list.c_str());
-    }
 
     std::set<std::filesystem::path> sorted_by_name;
 
     for (const auto &path_to_file: std::filesystem::directory_iterator(path_to_files_folder))
         sorted_by_name.insert(path_to_file.path());
 
-    
     std::vector<std::string> files_list = {};
     std::string file_list {};
     int idx = 0;
 
     for (const auto& path_to_file : sorted_by_name) {
-        std::string file_name (path_to_file);
-
-        int loc_last_slash = file_name.find_last_of('/');
-        file_name = file_name.substr(loc_last_slash+1); // file name with extension
+        std::string file_name = path_to_file.filename();
 
         file_list = std::to_string(idx++) + " " + file_name;
         
         files_list.push_back(file_list); 
     }
 
+    if (std::filesystem::exists(path_to_list)) {
+        std::remove(path_to_list.c_str());
+    }
     std::ofstream list_file(path_to_list);
     std::ostream_iterator<std::string> list_iterator(list_file, "\n");
-    std::copy(files_list.begin(), files_list.end(), list_iterator);
+    std::copy(files_list.begin()+2, files_list.end()-2, list_iterator);
 
     return idx;
 }
 
 void splitFilesList(
     const std::string &path_to_list, 
-    double split_ratio, 
     const std::string &path_to_first_list,
-    const std::string &path_to_second_list) {
+    const std::string &path_to_second_list,
+    double split_ratio) {
 
     std::string cur_line;
 
@@ -104,14 +79,6 @@ void splitFilesList(
             first_lines.push_back(cur_line);
         else 
             second_lines.push_back(cur_line);
-    }
-
-    // delete the first and the last 3 elements
-    for (size_t i = 0; i < 3; ++i) {
-        first_lines.erase(first_lines.begin());
-        first_lines.erase(first_lines.end());
-        second_lines.erase(second_lines.begin());
-        second_lines.erase(second_lines.end());
     }
 
     if (std::filesystem::exists(path_to_first_list)) {
@@ -149,6 +116,27 @@ void shuffleList(const std::string &path_to_list) {
 
     std::ostream_iterator<std::string> list_file_iterator(list_file_, "\n");
     std::copy(lines.begin(), lines.end(), list_file_iterator);
+}
+
+
+bool validateFolderDir(std::string &folder_dir) {
+    std::filesystem::path folder_path(folder_dir);
+    if (!std::filesystem::exists(folder_path)) { 
+        std::cout << "\nError: check folder_dir exists\n";
+        return false;
+    }
+    
+    std::filesystem::directory_entry folder_entry(folder_dir);
+    if (folder_entry.status().type() != std::filesystem::file_type::directory) {
+        std::cout << "\nError: this is not a direcotry\n";
+        return false;
+    }
+
+    if (folder_dir.back() != '/') {
+        folder_dir.push_back('/');
+    }
+
+    return true;
 }
 
 };

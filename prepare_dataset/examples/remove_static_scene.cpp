@@ -5,74 +5,71 @@ This file is for obtaining a list of removed static scenes
 */
 
 #include "images_handler.h"
-#include "files_handler.h"
 
-#include <iostream>
-#include <filesystem>
-#include <iterator>
-#include <fstream>
+double computeFlowMagnitude(cv::Mat &flow) {
+    cv::Mat flow_parts[2];
+    cv::split(flow, flow_parts);
+    cv::Mat magnitude, angle, magn_norm;
+    cv::cartToPolar(flow_parts[0], flow_parts[1], magnitude, angle, true);
+    cv::normalize(magnitude, magn_norm, 0.0f, 1.0f, cv::NORM_MINMAX);
+    // angle *= ((1.f / 360.f) * (180.f / 255.f));
 
-void printHelp(char* programName){
-    std::cout << " Correct usage: " << programName << " input_folder_dir" << " output_folder_dir" << std::endl;
-    exit(EXIT_FAILURE);
+    double sum_of_magnitude = cv::sum(magnitude)[0];
+    sum_of_magnitude /= (magnitude.size().width * magnitude.size().height);
+
+    return sum_of_magnitude;
 }
 
 int main(int argc, char** argv){
     if(argc != 3){
         std::cout << " Wrong number of arguments (!=2) " << std::endl;
-        printHelp(argv[0]);
     }
 
-    cch::ImagesHandler imagesHandler = cch::ImagesHandler();
     std::string input_folder_dir(argv[1]);
     std::string output_folder_dir(argv[2]);
 
-    std::string images_list {"./images_list_to_be_delete.txt"};
-    cch::makeFilesList(input_folder_dir, images_list);
+    if (false == cch::validateFolderDir(input_folder_dir)) return 1;
+    if (false == cch::validateFolderDir(output_folder_dir)) return 1;
 
-    imagesHandler.loadImages(input_folder_dir, images_list);
-
-    std::string path_to_list = output_folder_dir + "/image_files.txt";
+    std::string path_to_list = output_folder_dir + "image_files_nonstatic.txt";
     if (std::filesystem::exists(path_to_list)) {
         std::remove(path_to_list.c_str());
     }
+
+    std::set<std::filesystem::path> sorted_by_name;
+
+    for (const auto &path_to_file: std::filesystem::directory_iterator(input_folder_dir))
+        sorted_by_name.insert(path_to_file.path());
+
     std::vector<std::string> files_list = {};
-    size_t i = 1;
+    std::string file_list {};
 
-    size_t images_num = imagesHandler.imagesNum();
-    for (size_t index = 1; index < images_num; ++index) {
-        std::string path_to_source_image, path_to_target_image;
-        imagesHandler.accessImagesBuffer(index-1, path_to_source_image);
-        imagesHandler.accessImagesBuffer(index, path_to_target_image);
+    size_t index = 0;
+    auto iter_to_path = sorted_by_name.begin();
+    while (next(iter_to_path) != sorted_by_name.end()) {
+        std::string path_to_source_image = *iter_to_path;
+        std::string path_to_target_image = *(next(iter_to_path));
+
         cv::Mat flow;
-        imagesHandler.getOpticalflow(path_to_source_image, path_to_target_image, flow);
-
-        cv::Mat flow_parts[2];
-        cv::split(flow, flow_parts);
-        cv::Mat magnitude, angle, magn_norm;
-        cv::cartToPolar(flow_parts[0], flow_parts[1], magnitude, angle, true);
-        cv::normalize(magnitude, magn_norm, 0.0f, 1.0f, cv::NORM_MINMAX);
-        // angle *= ((1.f / 360.f) * (180.f / 255.f));
-
-        double sum_of_magnitude = cv::sum(magnitude)[0];
-        sum_of_magnitude /= (magnitude.size().width * magnitude.size().height);
-        if (index % 1000 == 0)
+        cch::getOpticalflow(path_to_source_image, path_to_target_image, flow);
+        double sum_of_magnitude = computeFlowMagnitude(flow);
+        
+        if (index % 100 == 0)
             std::cout << "current index: " << index << ", opticalflow magnitude: " << sum_of_magnitude << "\n";
 
         if (sum_of_magnitude > 0.2) {
             // moving scene, save to a list
-            auto loc_of_last_slash = path_to_target_image.find_last_of('/');
-            std::string target_image_name = std::to_string(i++) + " ";
-            target_image_name += path_to_target_image.substr(loc_of_last_slash + 1, path_to_target_image.size() - loc_of_last_slash);
-            files_list.push_back(target_image_name);
+            std::string filename = (*iter_to_path).filename();
+            std::string valid_file_line = std::to_string(index++) + " " + filename;
+            files_list.push_back(valid_file_line);
         }
+
+        iter_to_path++;
     }
 
     std::ofstream list_file(path_to_list);
     std::ostream_iterator<std::string> list_iterator(list_file, "\n");
-    std::copy(files_list.begin(), files_list.end(), list_iterator);
-
-    std::remove(images_list.c_str());
+    std::copy(files_list.begin()+2, files_list.end()-2, list_iterator);
 
     return 0;
 }

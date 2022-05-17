@@ -1,55 +1,38 @@
 #ifndef __IMAGES_HANDLER__
 #define __IMAGES_HANDLER__
 
-#include <vector>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <filesystem>
-
 #include <opencv2/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/video.hpp>
 
+#include "files_handler.h"
+
 namespace cch {
 
-class ImagesHandler {
-private:
+struct Camera {
+public:
     cv::Mat original_camera_matrix_;
     cv::Mat undistort_camera_matrix_;
     cv::Mat dist_coeffs_;
-    std::vector<std::string> images_path_buffer_;
-    
-public:
-    ImagesHandler();
-    void readCameraParameters(const std::string &yml_filename);
-    void loadImages(std::string &input_folder_dir, const std::string &images_list);
-    void undistortImages(std::string &output_folder_dir);
-    void cropImages(const size_t height, const size_t width, const size_t row_crop_center, const size_t col_crop_center, std::string &output_folder_dir);
-
-    void getOpticalflow(const std::string &path_to_source_image, const std::string &path_to_target_image, cv::Mat &flow);
-    void accessImagesBuffer(size_t index, std::string& path_to_image) const;
-    size_t imagesNum() const;
-
-private:
-    void visualizeOpticalFlow(cv::Mat &angle, cv::Mat &magn_norm);
+    void load(const std::string &file);
 };
+
+void undistortImages(std::string &input_folder_dir, std::string &output_folder_dir, Camera &camera_);
+Camera cropImages(std::string &input_folder_dir, std::string &output_folder_dir, Camera& orignal_camera, const size_t height, const size_t width, const size_t row_crop_center, const size_t col_crop_center);
+
+void getOpticalflow(const std::string &path_to_source_image, const std::string &path_to_target_image, cv::Mat &flow);
+void visualizeOpticalFlow(cv::Mat &angle, cv::Mat &magn_norm);
 
 /* --------------------------------------------------------------------------------- */
 
-
-ImagesHandler::ImagesHandler() {
-
-}
-
 // Read a YAML file with the camera parameters (cameraMatrix and distCoeffs)
-void ImagesHandler::readCameraParameters(const std::string &yml_filename){
-    std::cout << yml_filename << std::endl;
-    cv::FileStorage fs(yml_filename, cv::FileStorage::READ);
+void Camera::load(const std::string &file){
+    std::cout << "Loading the camera parameters from: " << file << std::endl;
+    cv::FileStorage fs(file, cv::FileStorage::READ);
     if( !fs.isOpened() ){
-        std::cerr << " Fail to open " << yml_filename << std::endl;
+        std::cerr << " Fail to open " << file << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -73,27 +56,7 @@ void ImagesHandler::readCameraParameters(const std::string &yml_filename){
     fs.release();
 }
 
-// Load images path
-void ImagesHandler::loadImages(std::string &input_folder_dir, const std::string &images_list){
-    if (input_folder_dir.back() != '/') {
-        input_folder_dir.push_back('/');
-    }
-    // Clear the buffer
-    if (!images_path_buffer_.empty()) images_path_buffer_.clear();
-    std::fstream fileHandler;
-    fileHandler.open(images_list, std::ios::in);
-    if (fileHandler.is_open()) {
-        std::string file_line; 
-        while (getline(fileHandler, file_line)) {
-            std::string cur_image_name (std::find(file_line.begin(), file_line.end(), ' ') + 1, file_line.end());
-            images_path_buffer_.push_back(input_folder_dir + cur_image_name);
-        }
-        fileHandler.close();
-    }
-    std::cout << " Images number = " << images_path_buffer_.size() << std::endl;
-}
-
-void ImagesHandler::getOpticalflow(const std::string &path_to_source_image, const std::string &path_to_target_image, cv::Mat &flow) {
+void getOpticalflow(const std::string &path_to_source_image, const std::string &path_to_target_image, cv::Mat &flow) {
     cv::Mat source_image = cv::imread(path_to_source_image);
     cv::Mat target_image = cv::imread(path_to_target_image);
     assert(!source_image.empty() && !target_image.empty());
@@ -130,81 +93,61 @@ void ImagesHandler::getOpticalflow(const std::string &path_to_source_image, cons
     }
 }
 
-// Undistort the images in the buffer
-void ImagesHandler::undistortImages(std::string &output_folder_dir){
-    if (output_folder_dir.back() != '/') {
-        output_folder_dir.push_back('/');
-    }
+void undistortImages(std::string &input_folder_dir, std::string &output_folder_dir, Camera &camera_) {
+    // Validate the directory of input folder and output folder
+    if (false == cch::validateFolderDir(input_folder_dir)) return;
+    if (false == cch::validateFolderDir(output_folder_dir)) return;
 
-    std::cout << "\n Undistort CameraMatrix = " << std::endl << " " << undistort_camera_matrix_ << std::endl << std::endl;
+    std::filesystem::directory_iterator list(input_folder_dir);
+
+    std::cout << "\n Undistort CameraMatrix = " << std::endl << " " << camera_.undistort_camera_matrix_ << std::endl << std::endl;
     std::cout << " Undistorting images... " << std::endl;
 
-    for(auto imagePath = images_path_buffer_.begin(); imagePath != images_path_buffer_.end(); ++imagePath) {
-        cv::Mat inputImage = cv::imread(*imagePath, cv::IMREAD_COLOR);
-        if( !inputImage.data ){
-            std::cout << " Could not open or find the image: " << *imagePath << std::endl;
-            std::cout << " Verify if the input images path are absolute," << std::endl;
-            std::cout << " or change the program directory." << std::endl;
-            exit(EXIT_FAILURE);
-        }
+    for (auto& it: list) {
+        std::string filename = it.path().filename();
+        cv::Mat inputImage = cv::imread(it.path(), cv::IMREAD_COLOR);
         cv::Mat outputImage;
-        cv::undistort(inputImage, outputImage, original_camera_matrix_, dist_coeffs_, undistort_camera_matrix_);
+        cv::undistort(inputImage, outputImage, camera_.original_camera_matrix_, camera_.dist_coeffs_, camera_.undistort_camera_matrix_);
 
-        // Separate filename and path
-        size_t found = imagePath->find_last_of("/");
-        std::string filename = imagePath->substr(found + 1);
-
-        // Save undistorted image
         cv::imwrite(output_folder_dir + filename, outputImage);
     }
+
     std::cout << " Done !" << std::endl;
 }
 
-// Crop the images in the buffer
-void ImagesHandler::cropImages(const size_t height, const size_t width, const size_t row_crop_center, const size_t col_crop_center, std::string &output_folder_dir) {
-    if (output_folder_dir.back() != '/') {
-        output_folder_dir.push_back('/');
-    }
+Camera cropImages(std::string &input_folder_dir, std::string &output_folder_dir, Camera& orignal_camera, const size_t height, const size_t width, const size_t row_crop_center, const size_t col_crop_center) {
+    // Validate the directory of input folder and output folder
+    if (false == cch::validateFolderDir(input_folder_dir)) return orignal_camera;
+    if (false == cch::validateFolderDir(output_folder_dir)) return orignal_camera;
 
-    undistort_camera_matrix_.at<double>(0, 2) += (double(width) / 2 - col_crop_center);
-    undistort_camera_matrix_.at<double>(1, 2) += (double(height) / 2 - row_crop_center);
-    std::cout << "\n Cropped CameraMatrix = " << std::endl << " " << undistort_camera_matrix_ << std::endl << std::endl;
-    std::cout << " Cropping images... " << std::endl;
+    std::filesystem::directory_iterator list(input_folder_dir);
+    
+    Camera cropped_camera = orignal_camera;
+
+    cropped_camera.undistort_camera_matrix_.at<double>(0, 2) += (double(width) / 2 - col_crop_center);
+    cropped_camera.undistort_camera_matrix_.at<double>(1, 2) += (double(height) / 2 - row_crop_center);
 
     cv::Range row_range = cv::Range(row_crop_center - height / 2, row_crop_center + height / 2);
     cv::Range col_range = cv::Range(col_crop_center - width / 2, col_crop_center + width / 2);
 
-    for(auto imagePath = images_path_buffer_.begin(); imagePath != images_path_buffer_.end(); ++imagePath) {
-        cv::Mat inputImage = cv::imread(*imagePath, cv::IMREAD_COLOR);
-        if( !inputImage.data ){
-            std::cout << " Could not open or find the image: " << *imagePath << std::endl;
-            std::cout << " Verify if the input images path are absolute," << std::endl;
-            std::cout << " or change the program directory." << std::endl;
-            exit(EXIT_FAILURE);
-        }
+    std::cout << "\n Cropped CameraMatrix = \n " << cropped_camera.undistort_camera_matrix_ << "\n\n";
+    std::cout << " Cropping images... \n";
+
+    for (auto& it: list) {
+        std::string filename = it.path().filename();
+        cv::Mat inputImage = cv::imread(it.path(), cv::IMREAD_COLOR);
         cv::Mat outputImage;
         outputImage = inputImage(row_range, col_range);
 
-        // Separate filename and path
-        size_t found = imagePath->find_last_of("/");
-        std::string filename = imagePath->substr(found + 1);
-
-        // Save cropped image
         cv::imwrite(output_folder_dir + filename, outputImage);
     }
 
     std::cout << " Done !" << std::endl;
+
+    return cropped_camera;
 }
 
-void ImagesHandler::accessImagesBuffer(size_t index, std::string& path_to_image) const {
-    path_to_image = images_path_buffer_[index];
-}
-
-size_t ImagesHandler::imagesNum() const {
-    return images_path_buffer_.size();
-}
-
-void ImagesHandler::visualizeOpticalFlow(cv::Mat &angle, cv::Mat &magn_norm) {
+void visualizeOpticalFlow(cv::Mat &angle, cv::Mat &magn_norm) {
     // build hsv image
     cv::Mat _hsv[3], hsv, hsv8, bgr;
     _hsv[0] = angle;

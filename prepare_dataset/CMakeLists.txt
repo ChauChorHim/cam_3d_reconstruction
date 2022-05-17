@@ -23,10 +23,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 # ------------------------------------------------------------ #
 
-add_executable(process_images
-    ${CMAKE_SOURCE_DIR}/examples/process_images.cpp
+add_executable(undistort_images
+    ${CMAKE_SOURCE_DIR}/examples/undistort_images.cpp
 )
-target_link_libraries(process_images 
+target_link_libraries(undistort_images 
+    ${OpenCV_LIBS} 
+)
+
+# ------------------------------------------------------------ #
+
+add_executable(crop_images
+    ${CMAKE_SOURCE_DIR}/examples/crop_images.cpp
+)
+target_link_libraries(crop_images 
     ${OpenCV_LIBS} 
 )
 
@@ -53,9 +62,9 @@ target_link_libraries(remove_static_scene
 
 # ------------------------------------------------------------ #
 
-add_executable(make_ba_dataset
-    ${CMAKE_SOURCE_DIR}/examples/make_ba_dataset.cpp
-)
-target_link_libraries(make_ba_dataset
-    ${OpenCV_LIBS}
-)
+# add_executable(make_ba_dataset
+#     ${CMAKE_SOURCE_DIR}/examples/make_ba_dataset.cpp
+# )
+# target_link_libraries(make_ba_dataset
+#     ${OpenCV_LIBS}
+# )
