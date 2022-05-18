@@ -1,24 +1,11 @@
 /*
 
-This file is for obtaining a list of removed static scenes
+This file is for obtaining a list of removed static scenes using optical flow
 
 */
 
 #include "images_handler.h"
-
-double computeFlowMagnitude(cv::Mat &flow) {
-    cv::Mat flow_parts[2];
-    cv::split(flow, flow_parts);
-    cv::Mat magnitude, angle, magn_norm;
-    cv::cartToPolar(flow_parts[0], flow_parts[1], magnitude, angle, true);
-    cv::normalize(magnitude, magn_norm, 0.0f, 1.0f, cv::NORM_MINMAX);
-    // angle *= ((1.f / 360.f) * (180.f / 255.f));
-
-    double sum_of_magnitude = cv::sum(magnitude)[0];
-    sum_of_magnitude /= (magnitude.size().width * magnitude.size().height);
-
-    return sum_of_magnitude;
-}
+#include "opticalFlow_handler.h"
 
 int main(int argc, char** argv){
     if(argc != 3){
@@ -52,7 +39,7 @@ int main(int argc, char** argv){
 
         cv::Mat flow;
         cch::getOpticalflow(path_to_source_image, path_to_target_image, flow);
-        double sum_of_magnitude = computeFlowMagnitude(flow);
+        double sum_of_magnitude = cch::computeFlowMagnitude(flow);
         
         if (index % 100 == 0)
             std::cout << "current index: " << index << ", opticalflow magnitude: " << sum_of_magnitude << "\n";

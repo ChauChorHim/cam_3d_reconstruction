@@ -15,6 +15,13 @@ void getRelativePose(
     const Eigen::Quaterniond &source_q, const Eigen::Quaterniond &target_q,
     Eigen::Vector3d &relative_pos, Eigen::Quaterniond &relative_q);
 
+void getAbsolutePose(
+    const Eigen::Vector3d &pre_pos, const Eigen::Vector3d &cur_pos,
+    const Eigen::Quaterniond &pre_q, const Eigen::Quaterniond &cur_q,
+    Eigen::Vector3d &cur_abs_pos, Eigen::Quaterniond &cur_abs_q);
+
+/* --------------------------------------------------------------------------------- */
+
 void getRelativePose(
     const Eigen::Vector3d &source_pos, const Eigen::Vector3d &target_pos, 
     const Eigen::Quaterniond &source_q, const Eigen::Quaterniond &target_q,
@@ -22,6 +29,15 @@ void getRelativePose(
 
     relative_q = source_q.inverse() * target_q;
     relative_pos = source_q.inverse() * (target_pos - source_pos);
+}
+
+void getAbsolutePose(
+    const Eigen::Vector3d &pre_pos, const Eigen::Vector3d &cur_pos,
+    const Eigen::Quaterniond &pre_q, const Eigen::Quaterniond &cur_q,
+    Eigen::Vector3d &cur_abs_pos, Eigen::Quaterniond &cur_abs_q) {
+
+    cur_abs_q = cur_q * pre_q;
+    cur_abs_pos = cur_q * pre_pos + cur_pos;
 }
 
 };

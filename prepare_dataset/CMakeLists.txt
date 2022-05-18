@@ -13,8 +13,8 @@ include_directories(
 )
 
 
-SET(CMAKE_BUILD_TYPE "Release")
-# SET(CMAKE_BUILD_TYPE "Debug")
+# SET(CMAKE_BUILD_TYPE "Release")
+SET(CMAKE_BUILD_TYPE "Debug")
 
 
 # ------------------------------------------------------------ #
@@ -53,11 +53,35 @@ add_executable(extract_poses
 
 # ------------------------------------------------------------ #
 
+add_executable(relative_to_absolute_poses
+    ${CMAKE_SOURCE_DIR}/examples/relative_to_absolute_poses.cpp
+)
+
+# ------------------------------------------------------------ #
+
 add_executable(remove_static_scene
     ${CMAKE_SOURCE_DIR}/examples/remove_static_scene.cpp
 )
 target_link_libraries(remove_static_scene 
     ${OpenCV_LIBS} 
+)
+
+# ------------------------------------------------------------ #
+
+add_executable(mask_moving_objects
+    ${CMAKE_SOURCE_DIR}/examples/mask_moving_objects.cpp
+)
+target_link_libraries(mask_moving_objects
+    ${OpenCV_LIBS}
+)
+
+# ------------------------------------------------------------ #
+
+add_executable(test_vector_to_mat
+    ${CMAKE_SOURCE_DIR}/examples/test_vector_to_mat.cpp
+)
+target_link_libraries(test_vector_to_mat
+    ${OpenCV_LIBS}
 )
 
 # ------------------------------------------------------------ #
