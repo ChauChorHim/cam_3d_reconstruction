@@ -27,14 +27,11 @@ int main(int argc, char** argv) {
     Eigen::Quaterniond cur_q;
     Eigen::Quaterniond init_q;
     
-    size_t i = 0;
     std::ofstream path_to_pose_file(argv[3]);
     std::ofstream path_to_translation_file(argv[4]);
 
     bool is_init_frame = true;
     while (std::getline(timestamp_file, cur_timestamp)) {
-        i++;
-
         size_t begin = cur_timestamp.find_first_of(' ');
         size_t end = cur_timestamp.find_last_of('.');
         cur_timestamp = cur_timestamp.substr(begin+1, end-begin-1);
@@ -56,7 +53,7 @@ int main(int argc, char** argv) {
         gps_handler.timestamp2Gps(cur_timestamp, cur_gps_data);
         gps_handler.gps2UtmPose(cur_gps_data, cur_pos, cur_q);
         // cch::getRelativePose(pre_pos, cur_pos, pre_q, cur_q, relative_pos, relative_q);
-        cch::getRelativePose(init_pos, cur_pos, init_q, cur_q, relative_pos, relative_q);
+        cch::getRelativePose(cur_pos, init_pos, cur_q, init_q, relative_pos, relative_q);
         path_to_pose_file << cur_timestamp << " " 
                           << std::to_string(relative_pos[0]) << " " 
                           << std::to_string(relative_pos[1]) << " " 

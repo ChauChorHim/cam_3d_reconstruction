@@ -12,4 +12,4 @@ bin/
 scripts/
 README.md
 examples/make_ba_dataset.cpp
-examples/test_vector_to_mat.cpp
+examples/check_gps_file.cpp

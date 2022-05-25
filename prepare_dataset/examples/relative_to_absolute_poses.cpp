@@ -15,24 +15,6 @@ std::vector<T> parse2vector(std::string& pose_line, size_t num_ele) {
     return vec;
 }
 
-void avoidJumps(Eigen::Quaterniond &q_cur, Eigen::Quaterniond &q_pre)
-{
-    // double tmp1 = std::sqrt(pow(q_pre.x() - q_cur.x(), 2) + pow(q_pre.y() - q_cur.y(), 2) + pow(q_pre.z() - q_cur.z(), 2) + pow(q_pre.w() - q_cur.w(), 2));
-    // double tmp2 = std::sqrt(pow(q_pre.x() + q_cur.x(), 2) + pow(q_pre.y() + q_cur.y(), 2) + pow(q_pre.z() + q_cur.z(), 2) + pow(q_pre.w() + q_cur.w(), 2));
-    // if (tmp1 < tmp2) {
-    if (q_cur.w() < 0) {
-        q_cur.x() *= -1;
-        q_cur.y() *= -1;
-        q_cur.z() *= -1;
-        q_cur.w() *= -1;
-    }
-}
-
-void avoidJumps(Eigen::Vector3d &pos_cur, Eigen::Vector3d &pos_pre) {
-
-}
-
-
 int main(int argc, char** argv) {
     if(argc != 3){
         std::cout << " Wrong number of arguments" << std::endl;
@@ -68,8 +50,6 @@ int main(int argc, char** argv) {
         cur_q = Eigen::Quaterniond {pose_vec[4], pose_vec[5], pose_vec[6], pose_vec[7]};
 
         cch::getAbsolutePose(pre_pos, cur_pos, pre_q, cur_q, abs_pos, abs_q);
-
-        // avoidJumps(abs_q, pre_q);
 
         abs_pose_file << std::to_string(int(pose_vec[0])) << " " 
                       << std::to_string(abs_pos[0]) << " " 
