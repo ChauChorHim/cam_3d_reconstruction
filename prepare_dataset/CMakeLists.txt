@@ -87,3 +87,12 @@ target_link_libraries(mask_moving_objects
 # add_executable(check_gps_file
 #     ${CMAKE_SOURCE_DIR}/examples/check_gps_file.cpp
 # )
+
+# ------------------------------------------------------------ #
+
+add_executable(process_npy_mask
+    ${CMAKE_SOURCE_DIR}/examples/process_npy_mask.cpp
+)
+target_link_libraries(process_npy_mask
+    ${OpenCV_LIBS}
+)
