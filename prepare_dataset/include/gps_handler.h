@@ -35,6 +35,7 @@ public:
     void timestamp2Gps(const std::string& timestamp, GpsData& gps_data);
     void gps2UtmPose(GpsData& gps_data, Eigen::Vector3d& pos, Eigen::Quaterniond& q);
     void showGpsData(const GpsData& gps_data);
+    void loopGpsBuffer();
 };
 
 /* --------------------------------------------------------------------------------- */
@@ -115,14 +116,17 @@ void GpsHandler::showGpsData(const GpsData& gps_data) {
               << "Yaw: " << gps_data.yaw <<  "\n";
 }
 
-
 void GpsHandler::gps2UtmPose(GpsData& gps_data, Eigen::Vector3d& pos, Eigen::Quaterniond& q) {
+    // double roll = gps_data.roll;
+    // double pitch = gps_data.pitch;
+    // double yaw = gps_data.yaw * DEG_TO_RAD;
     double roll = gps_data.roll * DEG_TO_RAD;
     double pitch = -gps_data.pitch * DEG_TO_RAD;
     double yaw = M_PI / 2. - gps_data.yaw * DEG_TO_RAD;
-    q = Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()) * 
+
+    q = Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX()) * 
         Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
-        Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX());
+        Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ());
 
     double utm_east = 0.;
     double utm_north = 0.;
@@ -168,6 +172,24 @@ void GpsHandler::timestamp2Gps(const std::string& timestamp, GpsData& gps_data) 
     gps_data = gps_buffer_[last_search_index_]; 
 
     gps_data.timestamp = timestamp;
+}
+
+
+void GpsHandler::loopGpsBuffer() {
+
+    std::vector<double> rolls;
+    std::vector<double> pitchs;
+    std::vector<double> yaws;
+
+    for (auto &ele : gps_buffer_) {
+        rolls.push_back(ele.roll);
+        pitchs.push_back(ele.pitch);
+        yaws.push_back(ele.yaw);
+    }
+
+    std::cout << *std::max_element(rolls.begin(), rolls.end()) << " " << *std::min_element(rolls.begin(), rolls.end()) << "\n";
+    std::cout << *std::max_element(pitchs.begin(), pitchs.end()) << " " << *std::min_element(pitchs.begin(), pitchs.end()) << "\n";
+    std::cout << *std::max_element(yaws.begin(), yaws.end()) << " " << *std::min_element(yaws.begin(), yaws.end()) << "\n";
 }
 
 #endif

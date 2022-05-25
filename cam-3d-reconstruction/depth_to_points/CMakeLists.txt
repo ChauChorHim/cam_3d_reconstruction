@@ -5,18 +5,18 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
-find_package(PCL REQUIRED COMPONENTS common io)
+find_package(PCL REQUIRED COMPONENTS common io filters)
 
 include_directories(
     ${OPENCV_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIRS}
     ${PCL_INCLUDE_DIRS}   
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/../../prepare_dataset/include
 )
+
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
-
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
 # ------------------------------------------------------------ #
 
@@ -25,11 +25,11 @@ set (CMAKE_BUILD_TYPE "Debug")
 
 # ------------------------------------------------------------ #
 
-add_executable(test_one_frame
-    examples/src/test_one_frame.cpp
+add_executable(one_frame
+    examples/src/one_frame.cpp
 )
 
-target_link_libraries(test_one_frame
+target_link_libraries(one_frame
     PRIVATE 
         ${OpenCV_LIBS}
         ${PCL_LIBRARIES}
@@ -37,11 +37,11 @@ target_link_libraries(test_one_frame
 
 # ------------------------------------------------------------ #
 
-add_executable(test_multi_frame
-    examples/src/test_multi_frame.cpp
+add_executable(multi_frame
+    examples/src/multi_frame.cpp
 )
 
-target_link_libraries(test_multi_frame
+target_link_libraries(multi_frame
     PRIVATE
         ${OpenCV_LIBS}
         ${PCL_LIBRARIES}

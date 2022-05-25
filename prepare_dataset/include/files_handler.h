@@ -122,7 +122,7 @@ void shuffleList(const std::string &path_to_list) {
 bool validateFolderDir(std::string &folder_dir) {
     std::filesystem::path folder_path(folder_dir);
     if (!std::filesystem::exists(folder_path)) { 
-        std::cout << "\nError: check folder_dir exists\n";
+        std::cout << "\nError: check folder_dir exists: " + folder_dir + "\n";
         return false;
     }
     

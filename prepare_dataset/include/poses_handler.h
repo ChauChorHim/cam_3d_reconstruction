@@ -7,13 +7,11 @@
 
 namespace cch {
 
-/*
-    Given R1, t1 and R2, t2 in the same coordinates, compute the R and t between q1 and q2 -> q2 = R2^{-1} R1 q1 + R2^{-1} (t1 - t2)
-*/
+
 void getRelativePose(
-    const Eigen::Vector3d &source_pos, const Eigen::Vector3d &target_pos, 
-    const Eigen::Quaterniond &source_q, const Eigen::Quaterniond &target_q,
-    Eigen::Vector3d &relative_pos, Eigen::Quaterniond &relative_q);
+    const Eigen::Vector3d &t1, const Eigen::Vector3d &t2, 
+    const Eigen::Quaterniond &q1, const Eigen::Quaterniond &q2,
+    Eigen::Vector3d &t12, Eigen::Quaterniond &q12);
 
 void getAbsolutePose(
     const Eigen::Vector3d &pre_pos, const Eigen::Vector3d &cur_pos,
@@ -23,12 +21,16 @@ void getAbsolutePose(
 /* --------------------------------------------------------------------------------- */
 
 void getRelativePose(
-    const Eigen::Vector3d &source_pos, const Eigen::Vector3d &target_pos, 
-    const Eigen::Quaterniond &source_q, const Eigen::Quaterniond &target_q,
-    Eigen::Vector3d &relative_pos, Eigen::Quaterniond &relative_q) {
+    /*
+        Given q1, t1 and q2, t2 in the same coordinates (world), compute the R and t between P1 and P2 -> P2 = q2^{-1} q1 P1 + q2^{-1} (t1 - t2)
+        refer to https://math.stackexchange.com/questions/709622/relative-camera-matrix-pose-from-global-camera-matrixes
+    */
+    const Eigen::Vector3d &t1, const Eigen::Vector3d &t2, 
+    const Eigen::Quaterniond &q1, const Eigen::Quaterniond &q2,
+    Eigen::Vector3d &t12, Eigen::Quaterniond &q12) {
 
-    relative_q = source_q.inverse() * target_q;
-    relative_pos = source_q.inverse() * (target_pos - source_pos);
+    q12 = q2.inverse() * q1;
+    t12 = q2.inverse() * (t1 - t2);
 }
 
 void getAbsolutePose(

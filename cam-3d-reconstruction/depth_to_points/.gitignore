@@ -2,3 +2,5 @@
 build
 examples/bin
 examples/*.sh
+ext/__pycache__/
+README.md
