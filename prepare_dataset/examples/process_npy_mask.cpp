@@ -11,6 +11,7 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 
 template<class vecType>
 std::vector<unsigned long> npy2vec(std::string data_fname, std::vector<vecType> &data_out) {
@@ -150,6 +151,7 @@ int main(int argc, char** argv) {
 
         // Transfer the vector to a cv::Mat 
         cv::Mat1b cur_mask(npy_shape[0], npy_shape[1], cur_mask_vec.data());
+        cv::resize(cur_mask, cur_mask, cv::Size(704, 192), cv::INTER_LINEAR);
         std::string path_new_mask = output_folder_dir + (*iter_mask_path).stem().c_str() + ".jpeg";
         cv::imwrite(path_new_mask, cur_mask);
         
