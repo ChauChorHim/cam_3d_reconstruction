@@ -38,22 +38,26 @@ int main(int argc, char** argv) {
 
         std::cout << cur_timestamp << std::endl;
 
-        if (is_init_frame) {
-            is_init_frame = false;
-            cch::GpsData pre_gps_data;
-            std::string pre_timestamp = cur_timestamp;
-            gps_handler.timestamp2Gps(pre_timestamp, pre_gps_data);
-            gps_handler.gps2UtmPose(pre_gps_data, pre_pos, pre_q);
-
-            init_pos = pre_pos;
-            init_q = pre_q;
-            continue;
-        }
         // Get the nearest gps data for current timestamp
         gps_handler.timestamp2Gps(cur_timestamp, cur_gps_data);
         gps_handler.gps2UtmPose(cur_gps_data, cur_pos, cur_q);
+
+        if (is_init_frame) {
+            is_init_frame = false;
+            init_pos = cur_pos;
+            init_q = cur_q;
+            cch::getRelativePose(cur_pos, init_pos, cur_q, init_q, relative_pos, relative_q);
+        }
+
+        // Get relative pose from previous frame to current frame
         // cch::getRelativePose(pre_pos, cur_pos, pre_q, cur_q, relative_pos, relative_q);
+
+        // Get absolute pose in the first pose's frame
         cch::getRelativePose(cur_pos, init_pos, cur_q, init_q, relative_pos, relative_q);
+
+        // Transform from gps frame to cam frame
+        relative_q = relative_q * Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitY());
+
         path_to_pose_file << cur_timestamp << " " 
                           << std::to_string(relative_pos[0]) << " " 
                           << std::to_string(relative_pos[1]) << " " 
