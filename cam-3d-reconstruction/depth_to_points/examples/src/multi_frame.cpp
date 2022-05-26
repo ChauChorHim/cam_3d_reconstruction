@@ -69,8 +69,8 @@ int main(int argc, char** argv) {
     pcl::PointCloud<pcl::PointXYZRGB> cur_pointcloud;
 
     for (size_t idx = 500; idx < pcd_list.size(); idx++) {
-        // if (idx % 2 == 1) {
-        if (true) {
+        if (idx % 2 == 1) {
+        // if (true) {
             std::cout << "\nCurrent pcd idx: " << idx << "\n";
             cur_pointcloud.clear();
             pcl::io::loadPCDFile<pcl::PointXYZRGB> (pcd_list[idx], cur_pointcloud);

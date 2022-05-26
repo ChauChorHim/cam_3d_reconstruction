@@ -44,7 +44,7 @@ namespace cch {
 class PointCloudSaver {
 public:
     PointCloudSaver(float fx, float fy, float cx, float cy);
-    void depthToPointCloud(std::string& path_to_depth_npy, std::string* path_to_image=nullptr);
+    void depthToPointCloud(std::string& path_to_depth_npy, std::string& path_to_mask, std::string* path_to_image=nullptr);
     void addPointCloudWithPose(pcl::PointCloud<pcl::PointXYZRGB> &cur_pc_cam, Eigen::Vector3d& pos, Eigen::Quaterniond& q);
     void removeOutlier();
     void downSample();
@@ -60,7 +60,7 @@ private:
     pcl::StatisticalOutlierRemoval<pcl::PointXYZRGB> outlier_sort_;
     pcl::VoxelGrid<pcl::PointXYZRGB> downsample_sort_;
     
-    void depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_cloud, std::string& path_to_depth_npy, std::string* path_to_image);
+    void depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_cloud, std::string& path_to_depth_npy, std::string& path_to_mask, std::string* path_to_image);
     // void depth2rgb(std::string& path_to_depth_npy, std::string& path_to_image);
     // void hsv2rgb(int hue, int saturation, int value, int* r, int* g, int* b);
 };
@@ -72,13 +72,13 @@ PointCloudSaver::PointCloudSaver(float fx, float fy, float cx, float cy) : fx_{f
     
 }
 
-void PointCloudSaver::depthToPointCloud(std::string& path_to_depth_npy, std::string* path_to_image) {
+void PointCloudSaver::depthToPointCloud(std::string& path_to_depth_npy, std::string& path_to_mask, std::string* path_to_image) {
     pcl::PointCloud<pcl::PointXYZRGB> cur_cloud_camera;
-    depthToPointCloud(cur_cloud_camera, path_to_depth_npy, path_to_image);
+    depthToPointCloud(cur_cloud_camera, path_to_depth_npy, path_to_mask, path_to_image);
     cloud_ = std::move(cur_cloud_camera);
 }
 
-void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_cloud, std::string& path_to_depth_npy, std::string* path_to_image) {
+void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_cloud, std::string& path_to_depth_npy, std::string& path_to_mask, std::string* path_to_image) {
     if (path_to_image == nullptr) {
         throw NotImplemented();
     }
@@ -93,6 +93,8 @@ void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_c
     cv::Mat image_mat = cv::imread(*path_to_image);
     int data_row = image_mat.rows;
     int data_col = image_mat.cols;
+
+    cv::Mat1b mask_mat = cv::imread(path_to_mask, cv::IMREAD_GRAYSCALE);
 
     // Clear the pointcloud
     cur_cloud.clear();
@@ -114,6 +116,11 @@ void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_c
 
         pcl::PointXYZRGB &pt = cur_cloud[idx];
 
+        // Assign depth to be 0 according to the mask to filter out some points
+        if (mask_mat.at<uchar>(v, u) != 0) {
+            depth_vec[idx] = 0;
+        }
+
         float pixel_depth = depth_vec[idx];
 
         /* filter out some points */
@@ -122,7 +129,7 @@ void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_c
             pt.x = (static_cast<float> (u) - cx_) / fx_* pt.z;
             pt.y = (static_cast<float> (v) - cy_) / fy_* pt.z;
 
-            cv::Vec3b pixel_image = image_mat.at<cv::Vec3b>(idx / data_col, idx % data_col);
+            cv::Vec3b pixel_image = image_mat.at<cv::Vec3b>(v, u);
 
             pt.r = pixel_image[2];
             pt.g = pixel_image[1];
