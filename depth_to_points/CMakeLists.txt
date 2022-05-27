@@ -12,7 +12,7 @@ include_directories(
     ${EIGEN3_INCLUDE_DIRS}
     ${PCL_INCLUDE_DIRS}   
     ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/../../prepare_dataset/include
+    ${CMAKE_SOURCE_DIR}/../prepare_dataset/include
 )
 
 link_directories(${PCL_LIBRARY_DIRS})
