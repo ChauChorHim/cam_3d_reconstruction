@@ -11,7 +11,7 @@ int main(int argc, char** argv){
     cch::validateFolderDir(input_folder_dir);
     cch::validateFolderDir(output_folder_dir);
 
-    cch::makeFilesList(input_folder_dir, output_folder_dir + "image_files.txt");
+    // cch::makeFilesList(input_folder_dir, output_folder_dir + "image_files.txt");
 
     cch::splitFilesList(
         output_folder_dir + "image_files.txt", 
