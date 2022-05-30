@@ -141,7 +141,6 @@ void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_c
 void PointCloudSaver::addPointCloudWithPose(pcl::PointCloud<pcl::PointXYZRGB> &cur_pc_cam, Eigen::Vector3d& pos, Eigen::Quaterniond& q) {
     Eigen::Matrix4d trans;
     trans.setIdentity();
-    q = q * Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitY());
     trans.block<3, 3>(0, 0) = q.toRotationMatrix();
     trans.block<3, 1>(0, 3) = pos;
 
