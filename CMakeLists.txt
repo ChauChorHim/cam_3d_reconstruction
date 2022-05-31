@@ -16,4 +16,4 @@ include_directories(
 )
 
 add_subdirectory(prepare_dataset)
-# add_subdirectory(depth_to_points)
+add_subdirectory(depth_to_points)
