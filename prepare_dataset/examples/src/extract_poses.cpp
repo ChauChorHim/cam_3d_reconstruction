@@ -1,6 +1,8 @@
 #include "poses_handler.h"
 #include "gps_handler.h"
 #include <cmath>
+#include <iostream>
+#include <fstream>
 
 int main(int argc, char** argv) {
     if(argc != 5){

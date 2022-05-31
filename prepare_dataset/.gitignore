@@ -2,6 +2,5 @@ build/
 .vscode/
 examples/bin
 examples/scripts
+lib
 README.md
-examples/src/make_ba_dataset.cpp
-examples/src/check_gps_file.cpp

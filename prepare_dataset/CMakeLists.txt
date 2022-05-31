@@ -19,61 +19,43 @@ SET(CMAKE_BUILD_TYPE "Debug")
 
 # ------------------------------------------------------------ #
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/examples/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
 # ------------------------------------------------------------ #
 
-add_executable(undistort_images
-    ${CMAKE_SOURCE_DIR}/examples/src/undistort_images.cpp
-)
-target_link_libraries(undistort_images 
-    ${OpenCV_LIBS} 
+add_library(files_handler SHARED
+    handler/files_handler.cpp
 )
 
 # ------------------------------------------------------------ #
 
-add_executable(crop_images
-    ${CMAKE_SOURCE_DIR}/examples/src/crop_images.cpp
-)
-target_link_libraries(crop_images 
-    ${OpenCV_LIBS} 
+add_library(gps_handler SHARED
+    handler/gps_handler.cpp
 )
 
 # ------------------------------------------------------------ #
 
-add_executable(make_train_val_files
-    ${CMAKE_SOURCE_DIR}/examples/src/make_train_val_files.cpp
+add_library(images_handler SHARED
+    handler/images_handler.cpp
+)
+target_link_libraries(images_handler PUBLIC
+    ${OpenCV_LIBS}
+    files_handler
 )
 
 # ------------------------------------------------------------ #
 
-add_executable(extract_poses
-    ${CMAKE_SOURCE_DIR}/examples/src/extract_poses.cpp
+add_library(poses_handler SHARED
+    handler/poses_handler.cpp
 )
 
 # ------------------------------------------------------------ #
 
-add_executable(remove_static_scene
-    ${CMAKE_SOURCE_DIR}/examples/src/remove_static_scene.cpp
+add_library(opticalFlow_handler SHARED
+    handler/opticalFlow_handler.cpp
 )
-target_link_libraries(remove_static_scene 
-    ${OpenCV_LIBS} 
-)
-
-# ------------------------------------------------------------ #
-
-add_executable(mask_moving_objects
-    ${CMAKE_SOURCE_DIR}/examples/src/mask_moving_objects.cpp
-)
-target_link_libraries(mask_moving_objects
+target_link_libraries(opticalFlow_handler PUBLIC
     ${OpenCV_LIBS}
 )
 
-# ------------------------------------------------------------ #
-
-add_executable(process_npy_mask
-    ${CMAKE_SOURCE_DIR}/examples/src/process_npy_mask.cpp
-)
-target_link_libraries(process_npy_mask
-    ${OpenCV_LIBS}
-)
+add_subdirectory(examples)
