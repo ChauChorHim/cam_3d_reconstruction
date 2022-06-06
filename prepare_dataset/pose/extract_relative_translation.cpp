@@ -5,7 +5,7 @@
 #include <fstream>
 
 int main(int argc, char** argv) {
-    if(argc != 5){
+    if(argc != 4){
         std::cout << " Wrong number of arguments" << std::endl;
     }
 
@@ -31,8 +31,7 @@ int main(int argc, char** argv) {
     Eigen::Quaterniond cur_q;
     Eigen::Quaterniond init_q;
     
-    // std::ofstream path_to_pose_file(argv[3]);
-    std::ofstream path_to_translation_file(argv[4]);
+    std::ofstream path_to_translation_file(argv[3]);
 
     bool is_init_frame_absolute = true;
     bool is_init_frame_relative = true;
@@ -61,18 +60,6 @@ int main(int argc, char** argv) {
         // Transform from gps frame to cam frame
         abs_q = abs_q * Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitY());
 
-        // Write to the file
-        // path_to_pose_file << cur_timestamp << " " 
-        //                   << std::to_string(abs_pos[0]) << " " 
-        //                   << std::to_string(abs_pos[1]) << " " 
-        //                   << std::to_string(abs_pos[2]) << " "
-        //                   << std::to_string(abs_q.x()) << " " 
-        //                   << std::to_string(abs_q.y()) << " " 
-        //                   << std::to_string(abs_q.z()) << " " 
-        //                   << std::to_string(abs_q.w()) << "\n";
-
-        /* ********************************************************** */
-
         /* Get relative pose from previous frame to current frame */
         if (is_init_frame_relative) {
             is_init_frame_relative = false;
@@ -80,16 +67,6 @@ int main(int argc, char** argv) {
             pre_q = abs_q;
         }
         cch::getRelativePose(pre_pos, abs_pos, pre_q, abs_q, rel_pos, rel_q);
-
-        // Write to the file
-        // path_to_pose_file << cur_timestamp << " " 
-        //                   << std::to_string(rel_pos[0]) << " " 
-        //                   << std::to_string(rel_pos[1]) << " " 
-        //                   << std::to_string(rel_pos[2]) << " "
-        //                   << std::to_string(rel_q.x()) << " " 
-        //                   << std::to_string(rel_q.y()) << " " 
-        //                   << std::to_string(rel_q.z()) << " " 
-        //                   << std::to_string(rel_q.w()) << "\n"; 
 
         double translation = std::sqrt(std::pow(rel_pos[0], 2) + std::pow(rel_pos[1], 2) + std::pow(rel_pos[2], 2));
         path_to_translation_file << cur_timestamp << " " << std::to_string(translation) << "\n";
@@ -99,7 +76,6 @@ int main(int argc, char** argv) {
     }
 
     path_to_translation_file.close();
-    // path_to_pose_file.close();
 
     return 0;
 }
