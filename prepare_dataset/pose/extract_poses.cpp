@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     Eigen::Quaterniond cur_q;
     Eigen::Quaterniond init_q;
     
-    std::ofstream path_to_pose_file(argv[3]);
+    // std::ofstream path_to_pose_file(argv[3]);
     std::ofstream path_to_translation_file(argv[4]);
 
     bool is_init_frame_absolute = true;
@@ -82,24 +82,24 @@ int main(int argc, char** argv) {
         cch::getRelativePose(pre_pos, abs_pos, pre_q, abs_q, rel_pos, rel_q);
 
         // Write to the file
-        path_to_pose_file << cur_timestamp << " " 
-                          << std::to_string(rel_pos[0]) << " " 
-                          << std::to_string(rel_pos[1]) << " " 
-                          << std::to_string(rel_pos[2]) << " "
-                          << std::to_string(rel_q.x()) << " " 
-                          << std::to_string(rel_q.y()) << " " 
-                          << std::to_string(rel_q.z()) << " " 
-                          << std::to_string(rel_q.w()) << "\n"; 
+        // path_to_pose_file << cur_timestamp << " " 
+        //                   << std::to_string(rel_pos[0]) << " " 
+        //                   << std::to_string(rel_pos[1]) << " " 
+        //                   << std::to_string(rel_pos[2]) << " "
+        //                   << std::to_string(rel_q.x()) << " " 
+        //                   << std::to_string(rel_q.y()) << " " 
+        //                   << std::to_string(rel_q.z()) << " " 
+        //                   << std::to_string(rel_q.w()) << "\n"; 
 
-        // double translation = std::sqrt(std::pow(relative_pos[0], 2) + std::pow(relative_pos[1], 2) + std::pow(relative_pos[2], 2));
-        // path_to_translation_file << std::to_string(i) << " " << std::to_string(translation) << "\n";
+        double translation = std::sqrt(std::pow(rel_pos[0], 2) + std::pow(rel_pos[1], 2) + std::pow(rel_pos[2], 2));
+        path_to_translation_file << cur_timestamp << " " << std::to_string(translation) << "\n";
 
         pre_pos = std::move(abs_pos);
         pre_q = std::move(abs_q);
     }
 
     path_to_translation_file.close();
-    path_to_pose_file.close();
+    // path_to_pose_file.close();
 
     return 0;
 }
