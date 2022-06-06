@@ -3,6 +3,8 @@
 #include "depth_to_points.h"
 #include "files_handler.h"
 
+#include <pcl/io/pcd_io.h>
+
 void printHelp(char* programName){
     std::cout << " Correct usage: " << programName << " fx fy cx cy path_to_input_pcd path_to_output_pcd path_to_pose\n"; 
     exit(EXIT_FAILURE);

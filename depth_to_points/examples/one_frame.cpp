@@ -3,7 +3,6 @@
 
 #include "depth_to_points.h"
 #include "files_handler.h"
-#include "npy.h"
 
 void printHelp(char* programName){
     std::cout << " Correct usage: " << programName << " fx fy cx cy dir_to_npy dir_to_rgb dir_to_output_pcd\n"; 
