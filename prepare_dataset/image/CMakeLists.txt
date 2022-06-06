@@ -18,3 +18,11 @@ target_link_libraries(crop_images
     images_handler
 )
 
+# ------------------------------------------------------------ #
+
+add_executable(downsample_images
+    ${CMAKE_CURRENT_SOURCE_DIR}/downsample_images.cpp
+)
+target_link_libraries(downsample_images
+    images_handler
+)

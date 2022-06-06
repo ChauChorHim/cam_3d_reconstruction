@@ -15,7 +15,7 @@ public:
 
 void undistortImages(std::string &input_folder_dir, std::string &output_folder_dir, Camera &camera_);
 Camera cropImages(std::string &input_folder_dir, std::string &output_folder_dir, Camera& orignal_camera, const size_t height, const size_t width, const size_t row_crop_center, const size_t col_crop_center);
-
+void downsampleImages(std::string &input_folder_dir, std::string &output_folder_dir, size_t new_width, size_t new_height);
 
 };
 

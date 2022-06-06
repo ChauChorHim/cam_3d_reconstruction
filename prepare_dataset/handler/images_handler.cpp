@@ -95,4 +95,24 @@ Camera cropImages(std::string &input_folder_dir, std::string &output_folder_dir,
     return cropped_camera;
 }
 
+void downsampleImages(std::string &input_folder_dir, std::string &output_folder_dir, size_t new_width, size_t new_height) {
+    // Validate the directory of input folder and output folder
+    if (false == cch::validateFolderDir(input_folder_dir)) return;
+    if (false == cch::validateFolderDir(output_folder_dir)) return;
+
+    std::filesystem::directory_iterator list(input_folder_dir);
+
+    for (auto& it: list) {
+        std::string filename = it.path().filename();
+        cv::Mat inputImage = cv::imread(it.path(), cv::IMREAD_COLOR);
+        cv::Mat outputImage;
+
+        cv::resize(inputImage, outputImage, cv::Size(new_width, new_height), cv::INTER_AREA);
+
+        cv::imwrite(output_folder_dir + filename, outputImage);
+    }
+
+    std::cout << " Done !" << std::endl;
+}
+
 } // namespace cch
