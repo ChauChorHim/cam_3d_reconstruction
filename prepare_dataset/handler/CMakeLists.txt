@@ -57,6 +57,7 @@ target_include_directories(opticalFlow_handler
         ${OPENCV_INCLUDE_DIRS}
         ${CMAKE_SOURCE_DIR}/prepare_dataset/include
 )
-target_link_libraries(opticalFlow_handler PUBLIC
-    ${OpenCV_LIBS}
+target_link_libraries(opticalFlow_handler 
+    PUBLIC
+        ${OpenCV_LIBS}
 )

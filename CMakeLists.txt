@@ -11,14 +11,6 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 message(FATAL_ERROR “In-source build detected!”)
 endif()
 
-# include_directories(
-#     ${OPENCV_INCLUDE_DIRS}
-#     ${EIGEN3_INCLUDE_DIRS}
-#     ${PCL_INCLUDE_DIRS}   
-#     ${CMAKE_SOURCE_DIR}/prepare_dataset/include
-#     ${CMAKE_SOURCE_DIR}/depth_to_points/include
-# )
-
 add_subdirectory(prepare_dataset)
 add_subdirectory(depth_to_points)
-# add_subdirectory(postprocess_data)
+add_subdirectory(postprocess_data)

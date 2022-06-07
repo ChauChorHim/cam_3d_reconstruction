@@ -32,10 +32,10 @@ int main(int argc, char** argv) {
     /* Compute the threshold size of objects */
 
     auto iter_mask_path = mask_images_path.begin();
-    cv::Mat mask_dummy = cv::imread(*iter_mask_path);
+    cv::Mat mask_dummy = cv::imread(*iter_mask_path, cv::IMREAD_GRAYSCALE);
     auto mask_shape = mask_dummy.size();
-    size_t width = mask_shape.width;
-    size_t height = mask_shape.height;
+    size_t width = mask_dummy.cols;
+    size_t height = mask_dummy.rows;
 
     // There are at most 25 objects in a mask, the i-th element of the vector is the pixel number of the i-th object
     std::vector<int> objects_pixel_num(25, 0);
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
             std::cout << "Current index: " << index << " / " << mask_images_path.size() << "\n";
         }
 
-        cv::Mat cur_mask = cv::imread(*iter_mask_path);
+        cv::Mat cur_mask = cv::imread(*iter_mask_path, cv::IMREAD_GRAYSCALE);
 
         // Count the number of pixels for each object 
         std::fill(objects_pixel_num.begin(), objects_pixel_num.end(), 0);
@@ -116,40 +116,43 @@ int main(int argc, char** argv) {
         if (index % 1000 == 0)
             std::cout << "Current index: " << index << " / " << mask_images_path.size() << "\n";
         
-        cv::Mat cur_mask = cv::imread(*iter_mask_path);
+        cv::Mat cur_mask = cv::imread(*iter_mask_path, cv::IMREAD_GRAYSCALE);
 
         // Count the number of pixels for each object 
         std::fill(objects_pixel_num.begin(), objects_pixel_num.end(), 0);
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
+        for (size_t i = 0; i < height; ++i) {
+            for (size_t j = 0; j < width; ++j) {
                 int pixel = cur_mask.at<uchar>(i, j);
                 if (pixel == 0) continue; // skip the environment (non-object)
                 objects_pixel_num[pixel]++;
             }
         }
 
-
-        // Loop every object and tag the mask value of small object
-        std::unordered_set<int> small_object_tag;
+        // Loop every object and tag the mask value of big object
+        std::unordered_set<int> big_object_tag;
         for (size_t i = 1; i < objects_pixel_num.size(); ++i) { // exclude the env
-            if (objects_pixel_num[i] < thres_area) {
-                small_object_tag.insert(i);
+            if (objects_pixel_num[i] >= thres_area) {
+                big_object_tag.insert(i);
             }
         }
 
+        cv::Mat mask_to_save = cur_mask.clone();
         // Loop every pixel and assign 0 for small object pixel
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                int pixel = cur_mask.at<uchar>(i, j);
-                if (pixel == 0) continue; // skip the environment (non-object)
-                if (small_object_tag.find(pixel) != small_object_tag.end()) {
-                    pixel = 0; 
+        for (size_t i = 0; i < height; ++i) {
+            for (size_t j = 0; j < width; ++j) {
+                int pixel = mask_to_save.at<uchar>(i, j);
+                if (pixel == 0) continue; // skip the environment
+                if (big_object_tag.find(pixel) != big_object_tag.end()) {
+                    // if it is a big object, assign what value?
+                    mask_to_save.at<uchar>(i, j) = 255; 
+                } else {
+                    mask_to_save.at<uchar>(i, j) = 0;
                 }
             }
         }
 
         std::string path_new_mask = output_folder_dir + (*iter_mask_path).stem().c_str() + ".jpeg";
-        cv::imwrite(path_new_mask, cur_mask);
+        cv::imwrite(path_new_mask, mask_to_save);
         
         if (std::next(iter_mask_path) != mask_images_path.end())
             iter_mask_path = std::next(iter_mask_path);
