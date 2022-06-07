@@ -5,10 +5,6 @@
 
 #include <pcl/io/pcd_io.h>
 
-void printHelp(char* programName){
-    std::cout << " Correct usage: " << programName << " fx fy cx cy path_to_input_pcd path_to_output_pcd path_to_pose\n"; 
-    exit(EXIT_FAILURE);
-}
 
 void line2PoseAndQ(std::string& line, Eigen::Vector3d& pos, Eigen::Quaterniond& q) {
     std::istringstream line_stream(line);
@@ -26,7 +22,6 @@ int main(int argc, char** argv) {
 
     if(argc != 8){
         std::cout << " Wrong number of arguments" << std::endl;
-        printHelp(argv[0]);
     }
 
     /* --- Config Settup --- */

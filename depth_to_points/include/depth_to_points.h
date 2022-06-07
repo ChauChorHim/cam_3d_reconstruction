@@ -12,12 +12,6 @@
 
 #include "npy.h"
 
-class NotImplemented : public std::logic_error
-{
-public:
-    NotImplemented() : std::logic_error("Function not yet implemented") { };
-};
-
 template<class vecType>
 void npy2vec(std::string data_fname, std::vector<vecType> &data_out) {
     std::vector<unsigned long> shape;
@@ -35,7 +29,7 @@ namespace cch {
 class PointCloudSaver {
 public:
     PointCloudSaver(float fx, float fy, float cx, float cy);
-    void depthToPointCloud(std::string& path_to_depth_npy, std::string& path_to_mask, std::string* path_to_image=nullptr);
+    void depthToPointCloud(std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask);
     void addPointCloudWithPose(pcl::PointCloud<pcl::PointXYZRGB> &cur_pc_cam, Eigen::Vector3d& pos, Eigen::Quaterniond& q);
     void removeOutlier();
     void downSample();
@@ -51,7 +45,7 @@ private:
     pcl::StatisticalOutlierRemoval<pcl::PointXYZRGB> outlier_sort_;
     pcl::VoxelGrid<pcl::PointXYZRGB> downsample_sort_;
     
-    void depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_cloud, std::string& path_to_depth_npy, std::string& path_to_mask, std::string* path_to_image);
+    void depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_cloud, std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask);
 };
 
 };

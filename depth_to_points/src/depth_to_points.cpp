@@ -19,16 +19,13 @@ PointCloudSaver::PointCloudSaver(float fx, float fy, float cx, float cy) : fx_{f
     
 }
 
-void PointCloudSaver::depthToPointCloud(std::string& path_to_depth_npy, std::string& path_to_mask, std::string* path_to_image) {
+void PointCloudSaver::depthToPointCloud(std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask) {
     pcl::PointCloud<pcl::PointXYZRGB> cur_cloud_camera;
-    depthToPointCloud(cur_cloud_camera, path_to_depth_npy, path_to_mask, path_to_image);
+    depthToPointCloud(cur_cloud_camera, path_to_depth_npy, path_to_image, path_to_mask);
     cloud_ = std::move(cur_cloud_camera);
 }
 
-void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_cloud, std::string& path_to_depth_npy, std::string& path_to_mask, std::string* path_to_image) {
-    if (path_to_image == nullptr) {
-        throw NotImplemented();
-    }
+void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_cloud, std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask) {
 
     std::vector<float> depth_vec;
     npy2vec<float>(path_to_depth_npy, depth_vec);
@@ -37,13 +34,15 @@ void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_c
               << *std::min_element(depth_vec.begin(), depth_vec.end()) << " " 
               << *std::max_element(depth_vec.begin(), depth_vec.end()) << "\n";
 
-    cv::Mat image_mat = cv::imread(*path_to_image);
+    cv::Mat image_mat = cv::imread(path_to_image);
     int data_row = image_mat.rows;
     int data_col = image_mat.cols;
 
-    cv::Mat1b mask_mat = cv::imread(path_to_mask, cv::IMREAD_GRAYSCALE);
+    bool use_mask = ("" != path_to_mask);
+    cv::Mat1b mask_mat;
+    if (use_mask)
+        mask_mat = cv::imread(path_to_mask, cv::IMREAD_GRAYSCALE);
 
-    // Clear the pointcloud
     cur_cloud.clear();
     cur_cloud.height = data_row;
     cur_cloud.width = data_col;
@@ -63,9 +62,10 @@ void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_c
 
         pcl::PointXYZRGB &pt = cur_cloud[idx];
 
-        // Assign depth to be 0 according to the mask to filter out some points
-        if (mask_mat.at<uchar>(v, u) != 0) {
-            depth_vec[idx] = 0;
+        if (use_mask) {
+            if (mask_mat.at<uchar>(v, u) != 0) {
+                depth_vec[idx] = 0;
+            }
         }
 
         float pixel_depth = depth_vec[idx];
