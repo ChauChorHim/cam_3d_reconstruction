@@ -1,3 +1,3 @@
 SET(CMAKE_BUILD_TYPE "Release")
 
-add_subdirectory(mask)
+add_subdirectory(npy)
