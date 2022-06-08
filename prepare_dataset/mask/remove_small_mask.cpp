@@ -45,13 +45,14 @@ int main(int argc, char** argv) {
     int total_area = width * height;
     int num_bins = 100;
     int max_object_area = total_area / 10;
-    for (int i = 0; i <= num_bins; ++i) {
+    for (int i = 1; i <= num_bins; ++i) {
         int area = i * max_object_area / num_bins;
         area_num[area] = 0;
     }
 
     size_t index = 0;
     // Compute the threshold of small objects
+
     while (1) {
         index++;
         if (index % 1000 == 0) {
@@ -70,16 +71,19 @@ int main(int argc, char** argv) {
             }
         }
 
+        int i = 0; 
         // insert object area into the map
-        for (int ele : objects_pixel_num) {
-            if (ele == 0) continue;
-            auto lower_bound = area_num.lower_bound(ele);
+        for (int object_area : objects_pixel_num) {
+            if (object_area == 0) continue;
+
+            auto lower_bound = area_num.lower_bound(object_area);
             if (lower_bound == area_num.end()) {
                 prev(lower_bound)->second++;
                 continue;
             }
             lower_bound->second++;
         } 
+
         if (std::next(iter_mask_path) != mask_images_path.end())
             iter_mask_path++;
         else break;
@@ -136,23 +140,22 @@ int main(int argc, char** argv) {
             }
         }
 
-        cv::Mat mask_to_save = cur_mask.clone();
         // Loop every pixel and assign 0 for small object pixel
         for (size_t i = 0; i < height; ++i) {
             for (size_t j = 0; j < width; ++j) {
-                int pixel = mask_to_save.at<uchar>(i, j);
+                int pixel = cur_mask.at<uchar>(i, j);
                 if (pixel == 0) continue; // skip the environment
-                if (big_object_tag.find(pixel) != big_object_tag.end()) {
-                    // if it is a big object, assign what value?
-                    mask_to_save.at<uchar>(i, j) = 255; 
+                if (big_object_tag.find(pixel) == big_object_tag.end()) {
+                    cur_mask.at<uchar>(i, j) = 0;
                 } else {
-                    mask_to_save.at<uchar>(i, j) = 0;
+                    // if it is a big object, assign what value?
+                    // cur_mask.at<uchar>(i, j) = 255; 
                 }
             }
         }
 
-        std::string path_new_mask = output_folder_dir + (*iter_mask_path).stem().c_str() + ".jpeg";
-        cv::imwrite(path_new_mask, mask_to_save);
+        std::string path_new_mask = output_folder_dir + (*iter_mask_path).stem().c_str() + ".tiff";
+        cv::imwrite(path_new_mask, cur_mask);
         
         if (std::next(iter_mask_path) != mask_images_path.end())
             iter_mask_path = std::next(iter_mask_path);
