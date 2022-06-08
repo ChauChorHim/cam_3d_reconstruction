@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
         // Transfer the vector to a cv::Mat 
         cv::Mat1b mask_mat(npy_shape[0], npy_shape[1], npy_mask_vec.data());
         // cv::resize(mask_mat, mask_mat, cv::Size(704, 192), cv::INTER_NEAREST);
-        std::string jpeg_mask_path = jpeg_mask_folder_dir + (*iter_mask_path).stem().c_str() + ".jpeg";
+        std::string jpeg_mask_path = jpeg_mask_folder_dir + (*iter_mask_path).stem().c_str() + ".tiff";
         cv::imwrite(jpeg_mask_path, mask_mat);
 
         // Go ahead
