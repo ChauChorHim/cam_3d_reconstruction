@@ -71,7 +71,7 @@ void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_c
         float pixel_depth = depth_vec[idx];
 
         /* filter out some points */
-        if (pixel_depth < 30 && pixel_depth > 5) {
+        if (pixel_depth < 10 && pixel_depth > 5) {
             pt.z = pixel_depth;
             pt.x = (static_cast<float> (u) - cx_) / fx_* pt.z;
             pt.y = (static_cast<float> (v) - cy_) / fy_* pt.z;

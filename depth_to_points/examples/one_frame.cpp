@@ -69,6 +69,7 @@ int main(int argc, char** argv) {
         std::string path_to_image = image_list[i];
         std::string path_to_mask = use_mask ? mask_list[i] : "";
 
+        std::cout << i << "/" << depth_list.size() << " ";
         point_cloud_saver.depthToPointCloud(path_to_depth, path_to_image, path_to_mask);
 
         std::string path_to_pcd = (std::filesystem::path(dir_to_pcd_file) / (image_list[i]).stem()).c_str();
