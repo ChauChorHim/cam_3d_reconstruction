@@ -30,8 +30,9 @@ namespace cch {
 class PointCloudSaver {
 public:
     PointCloudSaver(float fx, float fy, float cx, float cy);
-    void depthToPointCloud(std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask);
+    void depthToPointCloud(PointCloudT& cur_pc, std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask);
     void addPointCloud(PointCloudT &cur_pc);
+    void assignPointCloud(PointCloudT &cur_pc);
     void removeOutlier();
     void downSample();
     void save(std::string& path_to_pcd_file);
@@ -44,9 +45,7 @@ private:
     float cy_;
     PointCloudT cloud_;
     pcl::StatisticalOutlierRemoval<PointT> outlier_sort_;
-    pcl::VoxelGrid<PointT> downsample_sort_;
-    
-    void depthToPointCloud(PointCloudT& cur_cloud, std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask);
+    pcl::VoxelGrid<PointT> downsample_sort_;    
 };
 
 };

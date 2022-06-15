@@ -13,18 +13,10 @@ namespace cch {
 
 
 PointCloudSaver::PointCloudSaver(float fx, float fy, float cx, float cy) : fx_{fx}, fy_{fy}, cx_{cx}, cy_{cy} {
-    cloud_.resize(0);
-    
+    cloud_.resize(0); 
 }
 
-void PointCloudSaver::depthToPointCloud(std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask) {
-    PointCloudT cur_cloud_camera;
-    depthToPointCloud(cur_cloud_camera, path_to_depth_npy, path_to_image, path_to_mask);
-    cloud_ = std::move(cur_cloud_camera);
-}
-
-void PointCloudSaver::depthToPointCloud(PointCloudT& cur_cloud, std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask) {
-
+void PointCloudSaver::depthToPointCloud(PointCloudT& cur_pc, std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask) {
     std::vector<float> depth_vec;
     npy2vec<float>(path_to_depth_npy, depth_vec);
 
@@ -41,24 +33,24 @@ void PointCloudSaver::depthToPointCloud(PointCloudT& cur_cloud, std::string& pat
     if (use_mask)
         mask_mat = cv::imread(path_to_mask, cv::IMREAD_GRAYSCALE);
 
-    cur_cloud.clear();
-    cur_cloud.height = data_row;
-    cur_cloud.width = data_col;
-    cur_cloud.points.resize(data_row * data_col);
+    cur_pc.clear();
+    cur_pc.height = data_row;
+    cur_pc.width = data_col;
+    cur_pc.points.resize(data_row * data_col);
 
     {
         PointT pt;
         pt.x = pt.y = pt.z = 0;
         pt.b = pt.g = pt.r = 0;
         pt.a = 255;
-        cur_cloud.points.assign(cur_cloud.size(), pt);
+        cur_pc.points.assign(cur_pc.size(), pt);
     }
-    
+
     for (unsigned idx = 0; idx < data_row * data_col; ++idx) {
         unsigned v = idx / data_col;
         unsigned u = idx % data_col;
 
-        PointT &pt = cur_cloud[idx];
+        PointT &pt = cur_pc[idx];
 
         if (use_mask) {
             if (mask_mat.at<uchar>(v, u) != 0) {
@@ -87,6 +79,9 @@ void PointCloudSaver::addPointCloud(PointCloudT &new_pc) {
     cloud_ = cloud_ + new_pc;
 }
 
+void PointCloudSaver::assignPointCloud(PointCloudT &new_pc) {
+    cloud_ = std::move(new_pc);
+}
 
 void PointCloudSaver::removeOutlier() {
     // refer to http://pointclouds.org/documentation/tutorials/statistical_outlier.html#statistical-outlier-removal
