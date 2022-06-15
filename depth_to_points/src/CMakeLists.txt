@@ -9,8 +9,6 @@ target_include_directories(depth_to_points
     PRIVATE
         ${CMAKE_SOURCE_DIR}/depth_to_points/include
         ${CMAKE_SOURCE_DIR}/prepare_dataset/include
-        ${PCL_INCLUDE_DIRS}   
-        ${OPENCV_INCLUDE_DIRS}
 )
 target_link_libraries(depth_to_points
     PUBLIC

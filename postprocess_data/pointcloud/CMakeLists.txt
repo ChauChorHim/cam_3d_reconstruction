@@ -13,7 +13,6 @@ target_link_libraries(pc_tools
 )
 target_include_directories(pc_tools
     PRIVATE
-    ${PCL_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/prepare_dataset/include
     ${CMAKE_SOURCE_DIR}/postprocess_data/include
 )
@@ -29,7 +28,6 @@ target_link_libraries(icp
 )
 target_include_directories(icp
     PRIVATE
-    ${PCL_INCLUDE_DIRS}   
     ${CMAKE_SOURCE_DIR}/postprocess_data/include
 )
 

@@ -27,7 +27,6 @@ add_library(images_handler SHARED
 )
 target_include_directories(images_handler
     PRIVATE
-        ${OPENCV_INCLUDE_DIRS}
         ${CMAKE_SOURCE_DIR}/prepare_dataset/include
 )
 target_link_libraries(images_handler 
@@ -54,7 +53,6 @@ add_library(opticalFlow_handler SHARED
 )
 target_include_directories(opticalFlow_handler
     PRIVATE
-        ${OPENCV_INCLUDE_DIRS}
         ${CMAKE_SOURCE_DIR}/prepare_dataset/include
 )
 target_link_libraries(opticalFlow_handler 
