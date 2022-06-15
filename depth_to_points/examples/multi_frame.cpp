@@ -4,7 +4,7 @@
 #include "files_handler.h"
 
 #include <pcl/io/pcd_io.h>
-
+#include <pcl/common/transforms.h>
 
 void line2PoseAndQ(std::string& line, Eigen::Vector3d& pos, Eigen::Quaterniond& q) {
     std::istringstream line_stream(line);
@@ -65,16 +65,18 @@ int main(int argc, char** argv) {
     // Some temp parameters
     Eigen::Vector3d pos;
     Eigen::Quaterniond q;
-    pcl::PointCloud<pcl::PointXYZRGB> cur_pointcloud;
+    pcl::PointCloud<pcl::PointXYZRGB> cur_pc_cam;
 
-    for (size_t idx = 500; idx < pcd_list.size(); idx++) {
+    for (size_t idx = 300; idx < pcd_list.size(); idx++) {
         if (idx % 2 == 1) {
         // if (true) {
             std::cout << "\nCurrent pcd idx: " << idx << "\n";
-            cur_pointcloud.clear();
-            pcl::io::loadPCDFile<pcl::PointXYZRGB> (pcd_list[idx], cur_pointcloud);
+            cur_pc_cam.clear();
+            pcl::io::loadPCDFile<pcl::PointXYZRGB> (pcd_list[idx], cur_pc_cam);
             line2PoseAndQ(pose_lines[idx], pos, q);
-            point_cloud_saver.addPointCloudWithPose(cur_pointcloud, pos, q);
+            PointCloudT cur_pc_world;
+            pcl::transformPointCloud(cur_pc_cam, cur_pc_world, pos, q);
+            point_cloud_saver.addPointCloud(cur_pc_world);
         }
 
         if (idx >= 600)

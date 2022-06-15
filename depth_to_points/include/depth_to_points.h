@@ -1,8 +1,6 @@
 #ifndef _DEPTH_TO_POINTS_
 #define _DEPTH_TP_POINTS_
 
-#include <Eigen/Dense>
-
 #include <vector>
 #include <cstring>
 
@@ -11,6 +9,9 @@
 #include <pcl/filters/voxel_grid.h>
 
 #include "npy.h"
+
+typedef pcl::PointXYZRGB PointT;
+typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloudT;
 
 template<class vecType>
 void npy2vec(std::string data_fname, std::vector<vecType> &data_out) {
@@ -30,7 +31,7 @@ class PointCloudSaver {
 public:
     PointCloudSaver(float fx, float fy, float cx, float cy);
     void depthToPointCloud(std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask);
-    void addPointCloudWithPose(pcl::PointCloud<pcl::PointXYZRGB> &cur_pc_cam, Eigen::Vector3d& pos, Eigen::Quaterniond& q);
+    void addPointCloud(PointCloudT &cur_pc);
     void removeOutlier();
     void downSample();
     void save(std::string& path_to_pcd_file);
@@ -41,11 +42,11 @@ private:
     float fy_;
     float cx_;
     float cy_;
-    pcl::PointCloud<pcl::PointXYZRGB> cloud_;
-    pcl::StatisticalOutlierRemoval<pcl::PointXYZRGB> outlier_sort_;
-    pcl::VoxelGrid<pcl::PointXYZRGB> downsample_sort_;
+    PointCloudT cloud_;
+    pcl::StatisticalOutlierRemoval<PointT> outlier_sort_;
+    pcl::VoxelGrid<PointT> downsample_sort_;
     
-    void depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_cloud, std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask);
+    void depthToPointCloud(PointCloudT& cur_cloud, std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask);
 };
 
 };

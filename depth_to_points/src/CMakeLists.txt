@@ -7,7 +7,6 @@ add_library(depth_to_points SHARED
 )
 target_include_directories(depth_to_points
     PRIVATE
-        ${EIGEN3_INCLUDE_DIRS}
         ${CMAKE_SOURCE_DIR}/depth_to_points/include
         ${CMAKE_SOURCE_DIR}/prepare_dataset/include
         ${PCL_INCLUDE_DIRS}   

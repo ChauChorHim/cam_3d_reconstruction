@@ -5,11 +5,9 @@
 #include "depth_to_points.h"
 
 #include <opencv2/highgui.hpp>
-#include <opencv2/core/eigen.hpp>
 #include <opencv2/imgproc.hpp>
 
 #include <pcl/io/pcd_io.h>
-#include <pcl/common/transforms.h>
 
 namespace cch {
 
@@ -20,12 +18,12 @@ PointCloudSaver::PointCloudSaver(float fx, float fy, float cx, float cy) : fx_{f
 }
 
 void PointCloudSaver::depthToPointCloud(std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask) {
-    pcl::PointCloud<pcl::PointXYZRGB> cur_cloud_camera;
+    PointCloudT cur_cloud_camera;
     depthToPointCloud(cur_cloud_camera, path_to_depth_npy, path_to_image, path_to_mask);
     cloud_ = std::move(cur_cloud_camera);
 }
 
-void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_cloud, std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask) {
+void PointCloudSaver::depthToPointCloud(PointCloudT& cur_cloud, std::string& path_to_depth_npy, std::string& path_to_image, std::string& path_to_mask) {
 
     std::vector<float> depth_vec;
     npy2vec<float>(path_to_depth_npy, depth_vec);
@@ -49,7 +47,7 @@ void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_c
     cur_cloud.points.resize(data_row * data_col);
 
     {
-        pcl::PointXYZRGB pt;
+        PointT pt;
         pt.x = pt.y = pt.z = 0;
         pt.b = pt.g = pt.r = 0;
         pt.a = 255;
@@ -60,7 +58,7 @@ void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_c
         unsigned v = idx / data_col;
         unsigned u = idx % data_col;
 
-        pcl::PointXYZRGB &pt = cur_cloud[idx];
+        PointT &pt = cur_cloud[idx];
 
         if (use_mask) {
             if (mask_mat.at<uchar>(v, u) != 0) {
@@ -85,22 +83,31 @@ void PointCloudSaver::depthToPointCloud(pcl::PointCloud<pcl::PointXYZRGB>& cur_c
     }
 }
 
-void PointCloudSaver::addPointCloudWithPose(pcl::PointCloud<pcl::PointXYZRGB> &cur_pc_cam, Eigen::Vector3d& pos, Eigen::Quaterniond& q) {
-    Eigen::Matrix4d trans;
-    trans.setIdentity();
-    trans.block<3, 3>(0, 0) = q.toRotationMatrix();
-    trans.block<3, 1>(0, 3) = pos;
+void PointCloudSaver::addPointCloud(PointCloudT &new_pc) {
+    // Eigen::Matrix4d trans;
+    // trans.setIdentity();
+    // trans.block<3, 3>(0, 0) = q.toRotationMatrix();
+    // trans.block<3, 1>(0, 3) = pos;
 
-    pcl::transformPointCloud(cur_pc_cam, cur_pc_cam, trans);
+    // Eigen::Isometry3d trans = Eigen::Isometry3d::Identity();
+    // trans.translate(pos);
+    // trans.rotate(q);
 
-    cloud_ = cloud_ + cur_pc_cam;
+    // std::cout << pos << "\n\n";
+    // std::cout << q << "\n\n";
+    // std::cout << trans << "\n\n";
+
+    // PointCloudT cur_pc_world;
+    // pcl::transformPointCloud(cur_pc_cam, cur_pc_world, pos, q);
+
+    cloud_ = cloud_ + new_pc;
 }
 
 
 void PointCloudSaver::removeOutlier() {
     // refer to http://pointclouds.org/documentation/tutorials/statistical_outlier.html#statistical-outlier-removal
-    pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr pcloud = cloud_.makeShared();
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZRGB>);
+    PointCloudT::ConstPtr pcloud = cloud_.makeShared();
+    PointCloudT::Ptr cloud_filtered (new PointCloudT);
 
     outlier_sort_.setInputCloud(pcloud);
     outlier_sort_.setMeanK(50);
@@ -111,8 +118,8 @@ void PointCloudSaver::removeOutlier() {
 
 void PointCloudSaver::downSample() {
     // refer to http://pointclouds.org/documentation/tutorials/voxel_grid.html#voxelgrid
-    pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr pcloud = cloud_.makeShared();
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZRGB>);
+    PointCloudT::ConstPtr pcloud = cloud_.makeShared();
+    PointCloudT::Ptr cloud_filtered (new PointCloudT);
     downsample_sort_.setInputCloud(pcloud);
     downsample_sort_.setLeafSize (0.1f, 0.1f, 0.1f);
     downsample_sort_.filter (*cloud_filtered);
