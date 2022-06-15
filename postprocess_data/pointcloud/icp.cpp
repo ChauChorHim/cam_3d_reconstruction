@@ -130,7 +130,7 @@ void icpOptimizePose(std::vector<std::string>& pc_vec,
             std::cout << "ICP did not converge." << std::endl;
 
         Eigen::Matrix4f pose_output = icp.getFinalTransformation();
-        poses_output_vec.push_back(pose_output * poses_output_vec.back());
+        // poses_output_vec.push_back(pose_output * poses_output_vec.back());
         // poses_output_vec.push_back(pose_output);
 
         ptr_cloud_in = ptr_cloud_out;

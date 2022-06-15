@@ -9,6 +9,7 @@ add_library(pc_tools SHARED
 target_link_libraries(pc_tools
     PUBLIC
     ${PCL_LIBRARIES}
+    ${OpenCV_LIBS}
     files_handler
 )
 target_include_directories(pc_tools
@@ -28,6 +29,7 @@ target_link_libraries(icp
 )
 target_include_directories(icp
     PRIVATE
+    ${CMAKE_SOURCE_DIR}/prepare_dataset/include
     ${CMAKE_SOURCE_DIR}/postprocess_data/include
 )
 

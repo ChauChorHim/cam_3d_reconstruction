@@ -1,5 +1,0 @@
-.vscode
-build
-examples/bin
-examples/*.sh
-examples/scripts

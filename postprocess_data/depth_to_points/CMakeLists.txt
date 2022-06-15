@@ -3,7 +3,7 @@ add_definitions(${PCL_DEFINITIONS})
 
 # ------------------------------------------------------------ #
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/depth_to_points)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/postprocess_data)
 
 # ------------------------------------------------------------ #
 
@@ -14,13 +14,13 @@ add_executable(one_frame
 target_link_libraries(one_frame
     PRIVATE 
         files_handler
-        depth_to_points
+        pc_tools 
 )
 
 target_include_directories(one_frame
     PRIVATE
         ${CMAKE_SOURCE_DIR}/prepare_dataset/include
-        ${CMAKE_SOURCE_DIR}/depth_to_points/include
+        ${CMAKE_SOURCE_DIR}/postprocess_data/include
 )
 
 # ------------------------------------------------------------ #
@@ -32,13 +32,13 @@ add_executable(multi_frame
 target_link_libraries(multi_frame
     PRIVATE
         files_handler
-        depth_to_points
+        pc_tools 
 )
 
 target_include_directories(multi_frame
     PRIVATE
         ${CMAKE_SOURCE_DIR}/prepare_dataset/include
-        ${CMAKE_SOURCE_DIR}/depth_to_points/include
+        ${CMAKE_SOURCE_DIR}/postprocess_data/include
 )
 
 # ------------------------------------------------------------ #

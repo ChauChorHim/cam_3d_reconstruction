@@ -12,5 +12,4 @@ message(FATAL_ERROR “In-source build detected!”)
 endif()
 
 add_subdirectory(prepare_dataset)
-add_subdirectory(depth_to_points)
 add_subdirectory(postprocess_data)
