@@ -15,14 +15,3 @@ target_link_libraries(depth_to_points
         ${OpenCV_LIBS}
         ${PCL_LIBRARIES}
 )
-
-# ------------------------------------------------------------ #
-
-add_library(rotation_handler SHARED
-    ${CMAKE_CURRENT_SOURCE_DIR}/rotation_handler.cpp
-)
-target_include_directories(rotation_handler
-    PRIVATE
-        ${CMAKE_SOURCE_DIR}/depth_to_points/include
-        ${EIGEN3_INCLUDE_DIRS}
-)

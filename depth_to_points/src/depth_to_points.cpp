@@ -84,22 +84,6 @@ void PointCloudSaver::depthToPointCloud(PointCloudT& cur_cloud, std::string& pat
 }
 
 void PointCloudSaver::addPointCloud(PointCloudT &new_pc) {
-    // Eigen::Matrix4d trans;
-    // trans.setIdentity();
-    // trans.block<3, 3>(0, 0) = q.toRotationMatrix();
-    // trans.block<3, 1>(0, 3) = pos;
-
-    // Eigen::Isometry3d trans = Eigen::Isometry3d::Identity();
-    // trans.translate(pos);
-    // trans.rotate(q);
-
-    // std::cout << pos << "\n\n";
-    // std::cout << q << "\n\n";
-    // std::cout << trans << "\n\n";
-
-    // PointCloudT cur_pc_world;
-    // pcl::transformPointCloud(cur_pc_cam, cur_pc_world, pos, q);
-
     cloud_ = cloud_ + new_pc;
 }
 
