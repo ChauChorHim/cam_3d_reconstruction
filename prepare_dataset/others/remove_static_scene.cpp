@@ -66,5 +66,14 @@ int main(int argc, char** argv){
     std::ostream_iterator<std::string> list_iterator(list_file, "\n");
     std::copy(files_list.begin()+2, files_list.end()-2, list_iterator);
 
+    cch::splitFilesList(
+        path_to_list, 
+        output_folder_dir + "train_files.txt", 
+        output_folder_dir + "val_files.txt",
+        0.9);
+
+    cch::shuffleList(output_folder_dir + "train_files.txt");
+    cch::shuffleList(output_folder_dir + "val_files.txt");
+
     return 0;
 }

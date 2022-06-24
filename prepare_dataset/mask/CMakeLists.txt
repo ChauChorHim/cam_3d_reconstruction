@@ -14,15 +14,3 @@ target_include_directories(remove_small_mask
     PRIVATE
     ${CMAKE_SOURCE_DIR}/prepare_dataset/include
 )
-
-# ------------------------------------------------------------ #
-
-# add_executable(delete_ghost_mask
-#     ${CMAKE_CURRENT_SOURCE_DIR}/delete_ghost_mask/delete_ghost_mask.cpp
-# )
-# target_link_libraries(delete_ghost_mask
-#     files_handler
-#     ${OpenCV_LIBS}
-# )
-
-# ------------------------------------------------------------ #

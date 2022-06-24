@@ -1,6 +1,7 @@
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
+SET(CMAKE_BUILD_TYPE "Debug")
 # ------------------------------------------------------------ #
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/postprocess_data)

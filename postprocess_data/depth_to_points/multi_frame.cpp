@@ -18,9 +18,20 @@ void line2PoseAndQ(std::string& line, Eigen::Vector3d& pos, Eigen::Quaterniond& 
     q = Eigen::Quaterniond(line_vec[7], line_vec[4], line_vec[5], line_vec[6]);
 }
 
+Eigen::Isometry3d line2RotationMatrix(std::string& line) {
+    Eigen::Vector3d pos;
+    Eigen::Quaterniond q;
+    line2PoseAndQ(line, pos, q);
+
+    Eigen::Isometry3d T(q);
+    T.pretranslate(pos);
+
+    return T;
+}
+
 int main(int argc, char** argv) {
 
-    if(argc != 8){
+    if(argc != 10){
         std::cout << " Wrong number of arguments" << std::endl;
     }
 
@@ -35,6 +46,9 @@ int main(int argc, char** argv) {
     std::string dir_to_pcd {argv[5]};
     std::string path_to_output_pcd {argv[6]};
     std::string path_to_pose {argv[7]};
+
+    int start_index = (int)strtod(argv[8], nullptr);
+    int pc_nums = (int)strtod(argv[9], nullptr);
     
     cch::validateFolderDir(dir_to_pcd);
 
@@ -44,7 +58,7 @@ int main(int argc, char** argv) {
     for (const auto &path_to_file: std::filesystem::directory_iterator(dir_to_pcd))
         pcd_list_set.insert(path_to_file.path());
 
-    std::vector<std::filesystem::path> pcd_list (next(pcd_list_set.begin()), pcd_list_set.end());
+    std::vector<std::filesystem::path> pcd_list (pcd_list_set.begin(), pcd_list_set.end());
 
     std::cout << " --- \n" << pcd_list.size() << " pcd files are in the buffer --- \n\n";
 
@@ -67,23 +81,24 @@ int main(int argc, char** argv) {
     Eigen::Quaterniond q;
     pcl::PointCloud<pcl::PointXYZRGB> cur_pc_cam;
 
-    for (size_t idx = 300; idx < pcd_list.size(); idx++) {
-        if (idx % 2 == 1) {
-        // if (true) {
+    for (size_t idx = start_index; idx < start_index + pc_nums; idx++) {
+        // if (idx % 2 == 1) {
+        if (true) {
             std::cout << "\nCurrent pcd idx: " << idx << "\n";
             cur_pc_cam.clear();
             pcl::io::loadPCDFile<pcl::PointXYZRGB> (pcd_list[idx], cur_pc_cam);
-            line2PoseAndQ(pose_lines[idx], pos, q);
+            // line2PoseAndQ(pose_lines[idx], pos, q);
+            Eigen::Isometry3d T = line2RotationMatrix(pose_lines[idx]);
             PointCloudT cur_pc_world;
-            pcl::transformPointCloud(cur_pc_cam, cur_pc_world, pos, q);
+            // pcl::transformPointCloud(cur_pc_cam, cur_pc_world, pos, q);
+            pcl::transformPointCloud(cur_pc_cam, cur_pc_world, T.matrix());
             point_cloud_saver.addPointCloud(cur_pc_world);
         }
-
-        if (idx >= 600)
-            break;
     }
 
     /* --- Filter out outlier and downsample pointcloud --- */
+
+    point_cloud_saver.downSample();
 
     point_cloud_saver.removeOutlier();
 
