@@ -24,7 +24,7 @@ prepare data (images, poses) for depth prediction and pointcloud alignment
 * training with mask
 
 ### doc
-Documenting issues about pipeline of cam_3d_reconstruction (in Chinese).
+Documenting issues about pipeline of cam_3d_reconstruction.
 
 <!-- ### mask_rcnn_instance_segmentation (not upload yet)
 [mask_rcnn](https://github.com/matterport/Mask_RCNN) with:
